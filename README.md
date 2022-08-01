@@ -1,5 +1,5 @@
 # typedoc-plugin-versions
-#### It keeps track of your document builds and provides select options for all minor versions.  
+#### It keeps track of your document builds and provides select options for browsing.  
 <br />
 <img src="./media/Screenshot.jpg" width="500px" height="auto" border="1px solid light-grey" />
 <br />
