@@ -4,6 +4,7 @@
 	"entryPoints": [
 		"./src/index.ts"
 	],
+	"media": "./media",
 	"treatWarningsAsErrors": false,
 	"externalPattern": ["**/node_modules/**"],
 	"excludeExternals": true,
@@ -11,7 +12,6 @@
 	"plugin": ["./dist"],
 	"includeVersion": true,
 	"versions": {
-		"homeUrl": "http://localhost:5500/docs",
-		"stable": "0.1"
+		"homeUrl": "http://localhost:5500/docs"
 	}
 }

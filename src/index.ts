@@ -1,10 +1,20 @@
+/**
+ * Entry point for typedoc-plugin-versions
+ * 
+ * @module
+ */
+
 import { Application, ParameterType, RendererEvent } from 'typedoc';
 import path from 'path';
 import fs from 'fs-extra';
 import * as utils from './utils';
 import * as hook from './hooks';
-import { versionsOptions } from './types';
-
+import { validLocation, versionsOptions } from './types';
+export * from './types';
+/**
+ * The default Typedoc [plugin hook](https://typedoc.org/guides/development/#plugins).
+ * @param app 
+ */
 export function load(app: Application) {
 	app.options.addDeclaration({
 		help: 'Options for typedoc-plugin-versions',
@@ -13,8 +23,8 @@ export function load(app: Application) {
 		defaultValue: {
 			stable: utils.getMinorPackageVersion(), 
 			dev: utils.getPackageVersion(),
-			homeUrl: utils.getHomeUrl(),
-			location: false,
+			homeUrl: utils.getGhPageUrl(),
+			domLocation: 'false',
 		} as versionsOptions
 	});
 
@@ -22,7 +32,7 @@ export function load(app: Application) {
 
 
 	hook.injectSelectJs(app);
-	hook.injectSelectHtml(app, vOptions.location);
+	hook.injectSelectHtml(app, vOptions.domLocation as validLocation);
 
 	const rootPath = app.options.getValue('out');
 	const targetPath = path.join(rootPath, `v${utils.getPackageVersion()}`);
@@ -32,6 +42,10 @@ export function load(app: Application) {
 		return originalGenerateDocs(project, targetPath);
 	}
 	
+	/**
+	 * The documents have rendered and we now process directories into the select options
+	 * @event RendererEvent.END
+	 */
 	app.renderer.on(RendererEvent.END, () => {
 
 		const newNojekyllPath = path.join(targetPath, '.nojekyll');
@@ -56,3 +70,5 @@ export function load(app: Application) {
 	})
 
 }
+
+export {utils, hook}
