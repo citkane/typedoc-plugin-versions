@@ -1,0 +1,33 @@
+{
+	"name": "typedoc-plugin-versions",
+	"version": "0.2.0",
+	"description": "Provides typedoc versioning as per the npm version with dropdown selector",
+	"main": "src/index",
+	"scripts": {
+		"build": "tsc",
+		"docs": "tsc && typedoc"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/citkane/typedoc-plugin-versions.git"
+	},
+	"keywords": [
+		"typedoc",
+		"plugin",
+		"typedoc-plugin",
+		"versions",
+		"versioning"
+	],
+	"author": "Michael Jonker",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/fs-extra": "^9.0.13",
+		"@types/node": "^18.6.2",
+		"fs-extra": "^10.1.0",
+		"typedoc": "^0.23.9",
+		"typescript": "^4.7.4"
+	},
+	"peerDependencies": {
+		"typedoc": "^0.23"
+	}
+}
