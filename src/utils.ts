@@ -104,8 +104,5 @@ export function bugWorkaround(app): versionsOptions{
 	app.options.addReader(new TypeDocReader());
 	app.options.read(new Logger());
 	const options = app.options.getValue('versions') as versionsOptions;
-	Object.keys(defaultOpts).forEach(key => {
-		(typeof options[key] === 'undefined') && (options[key] = defaultOpts[key]);
-	})
-	return options
+	return {...defaultOpts, ...options };
 }
