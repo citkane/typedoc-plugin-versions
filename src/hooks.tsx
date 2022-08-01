@@ -26,11 +26,11 @@ const validHookLocations = ['body.begin', 'body.end', 'content.begin', 'content.
 export function injectSelectHtml(app: Application, domLocation: validLocation | string = 'false'){
 	if (validHookLocations.indexOf(domLocation) > -1) {
 		app.renderer.hooks.on(domLocation as validLocation , () => (
-			<select id="plugin-versions-select"></select>
+			<select id="plugin-versions-select" name="versions"></select>
 		))	
 	} else {
 		app.renderer.hooks.on('body.begin', () => (
-			<select id="plugin-versions-select" class="title"></select>
+			<select id="plugin-versions-select" class="title" name="versions"></select>
 		))	
 	}
 }
