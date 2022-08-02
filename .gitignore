@@ -1,7 +1,0 @@
-dist
-docs
-node_modules
-.nyc*
-.vs*
-test/stubs/docs
-test/coverage
