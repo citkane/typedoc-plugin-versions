@@ -20,11 +20,11 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
-
-      - name: Checkout gh-pages and build docs
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages
+      - name: Copy old documentation build
+        uses: planetoftheweb/copy-to-branches@v1
+        env:
+          key: gh-pages
+          files: docs
       - run: npm run docs
 
       - name: Deploy 🚀
