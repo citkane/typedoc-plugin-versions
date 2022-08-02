@@ -20,11 +20,12 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
-      - name: Copy existing docs into workspace
+      - name: Copy gh-pages into workspace
         uses: actions/checkout@v3
         with:
           ref: gh-pages
           path: tmp
+      - name: Move existing document builds into workspace
         run: |
           mkdir -p ./tmp/docs
           mv ./tmp/docs ./docs
