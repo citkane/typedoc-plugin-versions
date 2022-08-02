@@ -21,7 +21,7 @@ export function getGhPageUrl(repository: {url} = pack.repository) {
 	}
 	const splitUrl = repository.url.split('/'); 
 	const gitName = splitUrl[3];
-	const repoName = splitUrl[4];
+	const repoName = splitUrl[4].split('.')[0];
 	return `https://${gitName}.github.io/${repoName}`;
 }
 

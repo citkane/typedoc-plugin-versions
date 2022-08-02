@@ -18,7 +18,7 @@ describe('Unit testing for typedoc-plugin-versions', function(){
 		it('parses git url to gh-page url', function(){
 			assert.equal(
 				vUtils.getGhPageUrl({url: 'git+https://github.com/username/repository.git'}),
-				'https://username.github.io/repository.git',
+				'https://username.github.io/repository',
 				'did not parse gh-pages url correctly'
 			)
 		})
