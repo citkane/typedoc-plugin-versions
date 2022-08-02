@@ -81,6 +81,7 @@ describe('Unit testing for typedoc-plugin-versions', function(){
 			const link = path.join(docsPath, 'stable');
 			assert.isTrue(fs.existsSync(link), 'did not create a stable symlink');
 			assert.isTrue(fs.readlinkSync(link).endsWith('test/stubs/docs/v0.1.1'), 'did not link the stable symlink correctly');
+			assert.throws(() => {vUtils.makeStableLink(docsPath, semGroups, '0.11')}, 'Document directory does not exist: v0.11');
 		})
 		it('creates a dev version symlink', function(){
 			const directories = vUtils.getPackageDirectories(docsPath);
@@ -89,6 +90,8 @@ describe('Unit testing for typedoc-plugin-versions', function(){
 			const link = path.join(docsPath, 'dev');
 			assert.isTrue(fs.existsSync(link), 'did not create a dev symlink');
 			assert.isTrue(fs.readlinkSync(link).endsWith('test/stubs/docs/v0.1.0'), 'did not link the dev symlink correctly');
+			assert.throws(() => {vUtils.makeDevLink(docsPath, semGroups, '0.11.1')}, 'Document directory does not exist: v0.11.1');
+
 		})
 		it('creates all minor version links', function(){
 			const directories = vUtils.getPackageDirectories(docsPath);

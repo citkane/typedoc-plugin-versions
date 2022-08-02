@@ -122,9 +122,13 @@ export function makeIndex(docRoot: string){
  */
 export function makeStableLink(docRoot: string, semGroups:semanticGroups, pegVersion: minorVersion, name: semanticAlias = 'stable'): void {
 	const stableArray = pegVersion.split('.');
+	if (
+		typeof semGroups['v'+stableArray[0]] === 'undefined' || 
+		typeof semGroups['v'+stableArray[0]][stableArray[1]] === 'undefined') {
+		throw new Error(`Document directory does not exist: v${pegVersion}`);
+	}
 	let stableSource = `v${stableArray[0]}.${stableArray[1]}.${semGroups['v'+stableArray[0]][stableArray[1]]}`;
 	stableSource = path.join(docRoot, stableSource);
-	if (!fs.existsSync(stableSource)) throw new Error(`Document directory does not exist: ${stableSource}`);
 	const stableTarget = path.join(docRoot, name);
 	fs.existsSync(stableTarget) && fs.unlinkSync(stableTarget);
 	fs.createSymlinkSync(stableSource, stableTarget, 'dir')
@@ -140,7 +144,7 @@ export function makeStableLink(docRoot: string, semGroups:semanticGroups, pegVer
  export function makeDevLink(docRoot: string, semGroups:semanticGroups, pegVersion: patchVersion, name: semanticAlias = 'dev'): void {
 	let devSource = `v${pegVersion}`;
 	devSource = path.join(docRoot, devSource);
-	if (!fs.existsSync(devSource)) throw new Error(`Document directory does not exist: ${devSource}`);
+	if (!fs.existsSync(devSource)) throw new Error(`Document directory does not exist: v${pegVersion}`);
 	const devTarget = path.join(docRoot, name);
 	fs.existsSync(devTarget) && fs.unlinkSync(devTarget);
 	fs.createSymlinkSync(devSource, devTarget, 'dir')
