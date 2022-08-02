@@ -20,16 +20,16 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
-      - name: Checkout gh-pages and build docs
+      - name: Copy existing docs into workspace
         uses: actions/checkout@v3
         with:
           ref: gh-pages
           path: tmp
-      - run: |
+        run: |
           mkdir -p ./tmp/docs
           mv ./tmp/docs ./docs
-          ls ./docs
-          npm run docs
+      - name: Build documents
+        run: npm run docs
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
