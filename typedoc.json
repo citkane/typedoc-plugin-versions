@@ -12,7 +12,6 @@
 	"plugin": ["./dist"],
 	"includeVersion": true,
 	"versions": {
-		"homeUrl": "http://localhost:5500/docs",
 		"stable":"0.0",
 		"dev": "0.0.0"
 	}
