@@ -42,5 +42,7 @@ Documents are built (with no change to the typedoc flow) into subdirectories cor
 
 As long as you do not delete your historic document build folders, the document history will remain intact.
 
+If you want to remove a historic version, just delete the old folder and rebuild your documentation.
+
 ## CID
 Work on a CID workflow for gitHub is in progress.

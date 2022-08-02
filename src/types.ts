@@ -13,7 +13,7 @@ export interface versionsOptions {
 	 * The minor version that you would like to be marked as `stable`  
 	 * Defaults to the latest patch version of the version being built
 	 */
-	stable?: version;
+	stable?: minorVersion;
 	/**
 	 * The version that you would like to be marked as `dev`  
 	 * Defaults to the latest patch version of the version being built
@@ -39,3 +39,4 @@ export type semanticGroups = {[key: string]: {[key: string]: number}};
  * valid placement overrides for the select, corresponds to [typedoc render hooks](https://typedoc.org/api/interfaces/RendererHooks.html)
  */
 export type validLocation = 'body.begin' | 'body.end' | 'content.begin' | 'content.end' | 'navigation.begin' | 'navigation.end' ;
+export type semanticAlias = 'stable' | 'dev'

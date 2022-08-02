@@ -7,8 +7,8 @@
 import { Application, ParameterType, RendererEvent } from 'typedoc';
 import path from 'path';
 import fs from 'fs-extra';
-import * as utils from './utils';
-import * as hook from './hooks';
+import * as vUtils from './etc/utils';
+import * as vHooks from './etc/hooks';
 import { validLocation, versionsOptions } from './types';
 export * from './types';
 /**
@@ -21,21 +21,21 @@ export function load(app: Application) {
 		name: 'versions',
 		type: ParameterType.Mixed,
 		defaultValue: {
-			stable: utils.getMinorPackageVersion(), 
-			dev: utils.getPackageVersion(),
-			homeUrl: utils.getGhPageUrl(),
+			stable: vUtils.getMinorPackageVersion(), 
+			dev: vUtils.getPackageVersion(),
+			homeUrl: vUtils.getGhPageUrl(),
 			domLocation: 'false',
 		} as versionsOptions
 	});
 
-	const vOptions = utils.bugWorkaround(app);
+	const vOptions = vUtils.getVersionsOptions(app) as versionsOptions;
 
 
-	hook.injectSelectJs(app);
-	hook.injectSelectHtml(app, vOptions.domLocation as validLocation);
+	vHooks.injectSelectJs(app);
+	vHooks.injectSelectHtml(app, vOptions.domLocation as validLocation);
 
-	const rootPath = app.options.getValue('out');
-	const targetPath = path.join(rootPath, `v${utils.getPackageVersion()}`);
+
+	const {rootPath, targetPath} = vUtils.getPaths(app);
 
 	const originalGenerateDocs = app.generateDocs.bind(app);
 	app.generateDocs = (project, out) => {
@@ -48,27 +48,25 @@ export function load(app: Application) {
 	 */
 	app.renderer.on(RendererEvent.END, () => {
 
-		const newNojekyllPath = path.join(targetPath, '.nojekyll');
-		const oldNojekyllPath = path.join(rootPath, '.nojekyll');
-		const sourceAsset = path.join(process.cwd(), 'src/versionsMenu.js');
-		fs.copyFileSync(sourceAsset, path.join(targetPath, 'assets/versionsMenu.js'));
-		fs.removeSync(oldNojekyllPath);
-		fs.existsSync(newNojekyllPath) && fs.moveSync(newNojekyllPath, oldNojekyllPath);
+		vUtils.handleAssets(targetPath);		
+		vUtils.handleJeckyll(rootPath, targetPath);
 
-		const directories = utils.getPackageDirectories(rootPath);
-		const semGroups = utils.getSemGroups(directories);
+		const directories = vUtils.getPackageDirectories(rootPath);
+		const semGroups = vUtils.getSemGroups(directories);
 
-		utils.makePeggedLink(rootPath, semGroups, vOptions.stable, 'stable');
-		utils.makePeggedLink(rootPath, semGroups, vOptions.dev, 'dev');
-		utils.makeMinorVersionLinks(semGroups, rootPath);
+		vUtils.makeStableLink(rootPath, semGroups, vOptions.stable);
+		vUtils.makeDevLink(rootPath, semGroups, vOptions.dev);
+		vUtils.makeMinorVersionLinks(semGroups, rootPath);
 
-		const jsVersionKeys = utils.makeJsKeys(semGroups);
+		const jsVersionKeys = vUtils.makeJsKeys(semGroups);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);
 
-		const htmlIndex = utils.makeIndex(vOptions.homeUrl);
+		const htmlIndex = vUtils.makeIndex(vOptions.homeUrl);
 		fs.writeFileSync(path.join(rootPath, 'index.html'), htmlIndex);
 	})
 
+	return vOptions;
+
 }
 
-export {utils, hook}
+export {vUtils as utils, vHooks as hook}

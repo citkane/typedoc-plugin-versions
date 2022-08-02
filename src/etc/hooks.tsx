@@ -5,7 +5,7 @@
  */
 
 import {Application, JSX} from "typedoc";
-import { validLocation } from "./types";
+import { validLocation } from "../types";
 
 /**
  * Injects browser js to control the behaviour of the new `select` DOM element
