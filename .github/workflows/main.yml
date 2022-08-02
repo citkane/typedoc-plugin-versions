@@ -13,6 +13,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{matrix.node-version}}
+          cache: 'npm'
       - run: npm ci
       - run: npm run build
       - run: npm run test
+
+      - uses: codecov/codecov-action@v3
+        with:
+          files: ./test/coverage/clover.xml
