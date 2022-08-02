@@ -6,7 +6,8 @@
 	"scripts": {
 		"test": "nyc mocha",
 		"build": "tsc",
-		"docs": "tsc && typedoc"
+		"docs": "typedoc",
+		"docs:build": "tsc && typedoc"
 	},
 	"repository": {
 		"type": "git",
