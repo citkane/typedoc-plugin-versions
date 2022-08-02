@@ -1,6 +1,6 @@
 {
 	"name": "typedoc-plugin-versions",
-	"version": "0.0.1",
+	"version": "0.0.0",
 	"description": "Provides typedoc versioning as per the npm version with dropdown selector",
 	"main": "src/index",
 	"scripts": {
