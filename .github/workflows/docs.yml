@@ -26,7 +26,7 @@ jobs:
           ref: gh-pages
           path: tmp
       - run: |
-          mkdir ./tmp/docs
+          mkdir -p ./tmp/docs
           mv ./tmp/docs ./docs
           ls ./docs
           npm run docs
