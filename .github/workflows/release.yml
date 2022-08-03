@@ -16,9 +16,8 @@ jobs:
       - run: npm run build
 
       - name: Get Package Version
-        run: |          
-          RELEASE_NAME = npm info ./ version
-          echo "RELEASE_NAME=$(echo $RELEASE_NAME)" >> $GITHUB_ENV
+        run: |
+          echo "RELEASE_NAME=$(npm info ./ version)" >> $GITHUB_ENV
 
       - name: Test name
         run: echo $RELEASE_NAME
