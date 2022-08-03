@@ -1,7 +1,7 @@
 {
 	"name": "typedoc-plugin-versions",
 	"version": "0.0.0",
-	"description": "Provides typedoc versioning as per the npm version with dropdown selector",
+	"description": "Provides typedoc versioning with a dropdown selector",
 	"main": "src/index",
 	"scripts": {
 		"test": "nyc mocha",
