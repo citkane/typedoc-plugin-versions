@@ -1,4 +1,5 @@
 import path from 'path';
+import { getSemanticVersion as getSemanticVersion } from '../../src/etc/utils';
 
 export const stubsPath = __dirname;
 export const docsPath = path.join(stubsPath, 'docs');
@@ -7,7 +8,7 @@ export const stubSemanticLinks = ['v0.0', 'v0.1'];
 export const stubOptionKeys = ['stable', 'dev', 'homeUrl', 'domLocation'];
 export const stubPathKeys = ['rootPath', 'targetPath'];
 export const stubRootPath = '/test/stubs/docs'
-export const stubTargetPath = version => path.join(stubRootPath, `v${version}`);
+export const stubTargetPath = version => path.join(stubRootPath, getSemanticVersion(version));
 
 export const jsKeys = `
 "use strict"

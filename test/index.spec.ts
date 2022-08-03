@@ -2,10 +2,10 @@ import { assert } from 'chai'
 import path from 'path';
 import fs from 'fs-extra';
 import * as vUtils from '../src/etc/utils'
+import { minorVerRegex, verRegex } from '../src/etc/utils';
 import { docsPath, htmlRedirect, jsKeys, stubOptionKeys, stubPathKeys, stubRootPath, stubSemanticLinks, stubTargetPath } from './stubs/stubs'
 import { Application } from 'typedoc';
 import {load} from '../src/index'
-
 
 describe('Unit testing for typedoc-plugin-versions', function(){
 	it('loads and parses options', function(){
@@ -32,13 +32,13 @@ describe('Unit testing for typedoc-plugin-versions', function(){
 	})
 	describe('retrieving package version', function(){
 		it('retrieves patch value from package.json', function(){
-			assert.match(vUtils.getPackageVersion(), /^[\d]+.[\d]+.[\d]+$/, 'did not provided a correctly formatted patch version')
+			assert.match(vUtils.getSemanticVersion(), verRegex, 'did not provided a correctly formatted patch version')
 		})
 		it('throws error if version not defined', function(){
-			assert.throws(() => {vUtils.getPackageVersion(null)}, 'Package version was not found')
+			assert.throws(() => {vUtils.getSemanticVersion(null)}, 'Package version was not found')
 		})
 		it('retrieves minor value from package.json', function(){
-			assert.match(vUtils.getMinorPackageVersion(), /^[\d]+.[\d]+$/, 'did not return a correctly formatted minor version')
+			assert.match(vUtils.getMinorVersion(), minorVerRegex, 'did not return a correctly formatted minor version')
 		})
 	})
 	describe('parses and processes directories', function(){
