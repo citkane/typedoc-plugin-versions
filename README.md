@@ -1,3 +1,7 @@
+[![TEST AND BUILD](https://github.com/citkane/typedoc-plugin-versions/actions/workflows/main.yml/badge.svg)](https://github.com/citkane/typedoc-plugin-versions/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/citkane/typedoc-plugin-versions/branch/main/graph/badge.svg?token=5DDL83JO0R)](https://codecov.io/gh/citkane/typedoc-plugin-versions)
+
+
 # typedoc-plugin-versions
 #### It keeps track of your document builds and provides select options for browsing.  
 <br />
@@ -35,7 +39,7 @@ and in typedoc.json
 }
 ```
 
-## What sorcery is this, you may ask...
+## "What sorcery is this?", you may ask...
 `Typedoc-plugin-versions` takes the architectural approach of JuliaLang [Documenter](https://juliadocs.github.io/Documenter.jl/stable/).
 
 Documents are built (with no change to the typedoc flow) into subdirectories corresponding to the package.json version. Symlinks are created to minor versions, which are given as options in a `select` menu.
@@ -45,4 +49,13 @@ As long as you do not delete your historic document build folders, the document 
 If you want to remove a historic version, just delete the old folder and rebuild your documentation.
 
 ## CID
-Work on a CID workflow for gitHub is in progress.
+Below is a template for gitHub actions workflow.
+
+**How to**:
+- Create an empty branch called gh-pages
+- Under your repository 'Pages' settings, set:
+  - Source: Deploy from a branch
+  - Branch: gh-pages/docs (symlinks won't work in the gh-pages/root folder)
+- Create a [custom workflow](https://docs.github.com/en/actions/quickstart) as per this template for [PUBLISH DOCS](https://github.com/citkane/typedoc-plugin-versions/blob/main/.github/workflows/docs.yml)
+
+The "PUBLISH DOCS" action will now create a rolling update to your document set.

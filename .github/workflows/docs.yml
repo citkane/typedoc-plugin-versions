@@ -8,7 +8,6 @@ jobs:
     concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout main
         uses: actions/checkout@v3
         with:
@@ -31,7 +30,6 @@ jobs:
           mv ./tmp/docs ./docs
       - name: Build documents
         run: npm run docs
-
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
