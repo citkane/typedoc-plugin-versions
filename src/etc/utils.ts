@@ -30,19 +30,30 @@ export function getGhPageUrl(repository: {url} = pack.repository) {
  * @param version
  * @returns The package version
  */
-export function getPackageVersion(version: string | null = pack.version): string{
+export function getSemanticVersion(version: string | null = pack.version): patchVersion {
 	!version && (()=>{throw new Error('Package version was not found')})();
-	return version;
+	!verRegex.test(version) &&(()=>{throw new Error(`version is not semantically formatted: ${version}`)});
+	!version.startsWith('v') && (version = `v${version}`);
+
+	return version as patchVersion;
 }
 
 /**
  * Drops the patch from a semantic version string
  * @returns a minor version string in the for 0.0
  */
-export function getMinorPackageVersion(){
-	const version = getPackageVersion().split('.');
-	version.pop();
-	return version.join('.');
+export function getMinorVersion(version?: string): minorVersion{
+	let minorVers;
+	if (!version) {
+		version = getSemanticVersion()
+	}
+	minorVers = version.split('.');
+	(minorVers.length === 3) && minorVers.pop();
+	version = minorVers.join('.');
+	!minorVerRegex.test(version) && (()=>{throw new Error(`version is not semantically formatted: ${version}`)});
+	!version.startsWith('v') && (version = `v${version}`)
+
+	return version as minorVersion;
 }
 
 /**
@@ -53,7 +64,7 @@ export function getMinorPackageVersion(){
  export function getPackageDirectories(docRoot): [string]{
 	return fs.readdirSync(docRoot).filter(file => {		
 		const stats = fs.statSync(path.join(docRoot, file));
-		return stats.isDirectory() && /^v[\d]+.[\d]+.[\d]+/.test(file)
+		return stats.isDirectory() && verRegex.test(file)
 	}) as [string];
 }
 
@@ -121,13 +132,16 @@ export function makeIndex(docRoot: string){
  * @param name 
  */
 export function makeStableLink(docRoot: string, semGroups:semanticGroups, pegVersion: minorVersion, name: semanticAlias = 'stable'): void {
+
+	pegVersion = getMinorVersion(pegVersion);
+
 	const stableArray = pegVersion.split('.');
 	if (
-		typeof semGroups['v'+stableArray[0]] === 'undefined' || 
-		typeof semGroups['v'+stableArray[0]][stableArray[1]] === 'undefined') {
-		throw new Error(`Document directory does not exist: v${pegVersion}`);
+		typeof semGroups[stableArray[0]] === 'undefined' || 
+		typeof semGroups[stableArray[0]][stableArray[1]] === 'undefined') {
+		throw new Error(`Document directory does not exist: ${pegVersion}`);
 	}
-	let stableSource = `v${stableArray[0]}.${stableArray[1]}.${semGroups['v'+stableArray[0]][stableArray[1]]}`;
+	let stableSource = `${stableArray[0]}.${stableArray[1]}.${semGroups[stableArray[0]][stableArray[1]]}`;
 	stableSource = path.join(docRoot, stableSource);
 	const stableTarget = path.join(docRoot, name);
 	fs.existsSync(stableTarget) && fs.unlinkSync(stableTarget);
@@ -142,9 +156,11 @@ export function makeStableLink(docRoot: string, semGroups:semanticGroups, pegVer
  * @param name 
  */
  export function makeDevLink(docRoot: string, semGroups:semanticGroups, pegVersion: patchVersion, name: semanticAlias = 'dev'): void {
-	let devSource = `v${pegVersion}`;
-	devSource = path.join(docRoot, devSource);
-	if (!fs.existsSync(devSource)) throw new Error(`Document directory does not exist: v${pegVersion}`);
+
+	pegVersion = getSemanticVersion(pegVersion);
+
+	const devSource = path.join(docRoot, pegVersion);
+	if (!fs.existsSync(devSource)) throw new Error(`Document directory does not exist: ${pegVersion}`);
 	const devTarget = path.join(docRoot, name);
 	fs.existsSync(devTarget) && fs.unlinkSync(devTarget);
 	fs.createSymlinkSync(devSource, devTarget, 'dir')
@@ -186,7 +202,7 @@ export function getPaths(app, version?: patchVersion){
 	const rootPath = app.options.getValue('out'); 
 	return {
 		rootPath,
-		targetPath: path.join(rootPath, `v${getPackageVersion(version)}`)
+		targetPath: path.join(rootPath, getSemanticVersion(version))
 	}
 }
 export function handleJeckyll(rootPath: string, targetPath: string): void{
@@ -200,3 +216,6 @@ export function handleAssets(targetPath: string){
 	fs.ensureDirSync(path.join(targetPath, 'assets'));
 	fs.copyFileSync(sourceAsset, path.join(targetPath, 'assets/versionsMenu.js'));
 }
+
+export const verRegex = /^(v\d+|\d+).\d+.\d+/
+export const minorVerRegex = /^(v\d+|\d+).\d+$/

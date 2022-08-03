@@ -30,7 +30,7 @@ export interface versionsOptions {
 	 */
 	domLocation?: validLocation | 'false'
 }
-export type minorVersion = `${number}.${number}`;
+export type minorVersion = `${string | number}.${number}`;
 export type patchVersion = `${minorVersion}.${number}`;
 export type version = minorVersion | patchVersion;
 export type semanticGroups = {[key: string]: {[key: string]: number}};
@@ -40,3 +40,4 @@ export type semanticGroups = {[key: string]: {[key: string]: number}};
  */
 export type validLocation = 'body.begin' | 'body.end' | 'content.begin' | 'content.end' | 'navigation.begin' | 'navigation.end' ;
 export type semanticAlias = 'stable' | 'dev'
+

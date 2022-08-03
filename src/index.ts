@@ -21,8 +21,8 @@ export function load(app: Application) {
 		name: 'versions',
 		type: ParameterType.Mixed,
 		defaultValue: {
-			stable: vUtils.getMinorPackageVersion(), 
-			dev: vUtils.getPackageVersion(),
+			stable: vUtils.getMinorVersion(), 
+			dev: vUtils.getSemanticVersion(),
 			homeUrl: vUtils.getGhPageUrl(),
 			domLocation: 'false',
 		} as versionsOptions
