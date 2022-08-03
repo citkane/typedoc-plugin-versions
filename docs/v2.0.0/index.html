@@ -10,7 +10,9 @@
 <div class="col-8 col-content">
 <div class="tsd-page-title">
 <h2>typedoc-plugin-versions - v2.0.0</h2></div>
-<div class="tsd-panel tsd-typography">
+<div class="tsd-panel tsd-typography"><p><a href="https://github.com/citkane/typedoc-plugin-versions/actions/workflows/main.yml"><img src="https://github.com/citkane/typedoc-plugin-versions/actions/workflows/main.yml/badge.svg" alt="TEST AND BUILD"></a>
+<a href="https://codecov.io/gh/citkane/typedoc-plugin-versions"><img src="https://codecov.io/gh/citkane/typedoc-plugin-versions/branch/main/graph/badge.svg?token=5DDL83JO0R" alt="codecov"></a></p>
+
 <a href="#typedoc-plugin-versions" id="typedoc-plugin-versions" style="color: inherit; text-decoration: none;">
   <h1>typedoc-plugin-versions</h1>
 </a>
@@ -32,8 +34,8 @@
 <pre><code class="language-jsonc"><span class="hl-3">&quot;plugin&quot;</span><span class="hl-1">: [</span><span class="hl-3">&quot;typedoc-plugin-versions&quot;</span><span class="hl-1">],</span><br/><span class="hl-3">&quot;versions&quot;</span><span class="hl-1">: { </span><span class="hl-4">//custom options for versions</span><br/><span class="hl-1">    </span><span class="hl-4">/**</span><br/><span class="hl-4">     * The minor version that you would like to be marked as `stable`  </span><br/><span class="hl-4">     * Defaults to the latest patch version of the version being built</span><br/><span class="hl-4">     */</span><br/><span class="hl-1">    </span><span class="hl-5">&quot;stable&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;1.1&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-4">/**</span><br/><span class="hl-4">     * The version that you would like to be marked as `dev`  </span><br/><span class="hl-4">     * Defaults to the latest patch version of the version being built</span><br/><span class="hl-4">     */</span><br/><span class="hl-1">    </span><span class="hl-5">&quot;dev&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;1.2.19&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-4">/**</span><br/><span class="hl-4">     * The url to the base folder where you will host your documentation set  </span><br/><span class="hl-4">     * Default: will try to determine the GitHUB package url from package.json and convert it to gh-page url.</span><br/><span class="hl-4">     */</span><br/><span class="hl-1">    </span><span class="hl-5">&quot;homeUrl&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;https://mydocs.com/docs&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-4">/**</span><br/><span class="hl-4">     * A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks.  </span><br/><span class="hl-4">     * Default: Injects to left of header using vanilla js - not a typedoc render hook.</span><br/><span class="hl-4">     */</span><br/><span class="hl-1">    </span><span class="hl-5">&quot;domLocation&quot;</span><span class="hl-1">: </span><span class="hl-3">&quot;navigation.begin&quot;</span><br/><span class="hl-1">}</span>
 </code></pre>
 
-<a href="#what-sorcery-is-this-you-may-ask" id="what-sorcery-is-this-you-may-ask" style="color: inherit; text-decoration: none;">
-  <h2>What sorcery is this, you may ask...</h2>
+<a href="#quotwhat-sorcery-is-thisquot-you-may-ask" id="quotwhat-sorcery-is-thisquot-you-may-ask" style="color: inherit; text-decoration: none;">
+  <h2>&quot;What sorcery is this?&quot;, you may ask...</h2>
 </a>
 <p><code>Typedoc-plugin-versions</code> takes the architectural approach of JuliaLang <a href="https://juliadocs.github.io/Documenter.jl/stable/">Documenter</a>.</p>
 <p>Documents are built (with no change to the typedoc flow) into subdirectories corresponding to the package.json version. Symlinks are created to minor versions, which are given as options in a <code>select</code> menu.</p>
@@ -43,7 +45,18 @@
 <a href="#cid" id="cid" style="color: inherit; text-decoration: none;">
   <h2>CID</h2>
 </a>
-<p>Work on a CID workflow for gitHub is in progress.</p>
+<p>Below is a template for gitHub actions workflow.</p>
+<p><strong>How to</strong>:</p>
+<ul>
+<li>Create an empty branch called gh-pages</li>
+<li>Under your repository &#39;Pages&#39; settings, set:<ul>
+<li>Source: Deploy from a branch</li>
+<li>Branch: gh-pages/docs (symlinks won&#39;t work in the gh-pages/root folder)</li>
+</ul>
+</li>
+<li>Create a <a href="https://docs.github.com/en/actions/quickstart">custom workflow</a> as per this template for <a href="https://github.com/citkane/typedoc-plugin-versions/blob/main/.github/workflows/docs.yml">PUBLISH DOCS</a></li>
+</ul>
+<p>The &quot;PUBLISH DOCS&quot; action will now create a rolling update to your document set.</p>
 </div></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
