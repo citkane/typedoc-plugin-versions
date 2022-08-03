@@ -19,6 +19,9 @@ jobs:
         run: |
           echo "RELEASE_NAME=$(npm info ./ version)" >> $GITHUB_ENV
 
-      - name: Test name
-        run: echo $RELEASE_NAME
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ env.RELEASE_NAME }}
+
 
