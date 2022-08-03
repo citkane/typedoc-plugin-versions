@@ -1,37 +1,47 @@
 name: PUBLISH DOCS
 on:
   workflow_dispatch:
+  release:
+    types: [published]
+  # or set up your own custom triggers
 permissions:
-  contents: write
+  contents: write # allows the 'Deploy' step without tokens
+
 jobs:
   build:
-    concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout main
+      - name: Checkout src # checks out the source code into the active workspace
         uses: actions/checkout@v3
-        with:
-          ref: main
-      - name: Build  
+
+      - name: Build
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build
+      - run: npm ci # installs npm packages
+      - run: npm run build # set up 'build' script in your package.json
+
       - name: Copy gh-pages into workspace
         uses: actions/checkout@v3
         with:
-          ref: gh-pages
-          path: tmp
+          ref: gh-pages # grabs the gh-pages branch
+          path: tmp     # and puts it into the current workspace 'tmp' folder.  
+                        # This way we nest the gh-pages branch into the current branch workspace
+
       - name: Move existing document builds into workspace
+        # move the nested ./tmp/docs into ./docs so that typedoc-plugin-versions will build append to
+        # the existing document set
         run: |
           mkdir -p ./tmp/docs
           mv ./tmp/docs ./docs
+
       - name: Build documents
-        run: npm run docs
+        run: npm run docs #set up 'docs' build script in your package.json
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: docs
-          target-folder: docs
+          folder: docs          # take the 'docs' folder in the current workspace
+          target-folder: docs   # and put it's content in the 'docs' folder of gh-pages 
