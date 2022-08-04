@@ -13,6 +13,7 @@
 	"includeVersion": true,
 	"versions": {
 		"stable":"0.0",
-		"dev": "0.0.0"
+		"dev": "0.0.0",
+		"homeUrl": "http://localhost:5501/docs"
 	}
 }

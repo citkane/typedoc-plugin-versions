@@ -232,8 +232,8 @@ export function handleJeckyll(rootPath: string, targetPath: string): void{
  * Copies static assets to the document build folder
  * @param targetPath 
  */
-export function handleAssets(targetPath: string){
-	const sourceAsset = path.join(process.cwd(), 'src/assets/versionsMenu.js');
+export function handleAssets(targetPath: string, srcDir: string = __dirname){
+	const sourceAsset = path.join(srcDir, '../assets/versionsMenu.js');
 	fs.ensureDirSync(path.join(targetPath, 'assets'));
 	fs.copyFileSync(sourceAsset, path.join(targetPath, 'assets/versionsMenu.js'));
 }
