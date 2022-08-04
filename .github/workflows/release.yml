@@ -28,4 +28,8 @@ jobs:
           tag_name: ${{ env.RELEASE_NAME }}
           files: typedoc-plugin-versions-*.tgz
 
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./test/coverage/clover.xml
 
