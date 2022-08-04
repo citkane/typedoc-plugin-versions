@@ -12,9 +12,6 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: coverage
-      - run: |
-          ls -R
-          unzip coverage
 
       - uses: codecov/codecov-action@v3
         with:
@@ -30,7 +27,9 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: distribution
-
+      - run: |
+          ls -R
+          
       - name: Get Package Version
         run: |
           echo "RELEASE_NAME=$(npm info ./ version)" >> $GITHUB_ENV
