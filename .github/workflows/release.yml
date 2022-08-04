@@ -29,9 +29,7 @@ jobs:
         with:
           name: distribution
           path: ./dist
-      - run: |
-          ls -R
-
+          
       - name: Package the build artifact
         run: npm pack ./dist
 

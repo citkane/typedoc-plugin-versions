@@ -27,6 +27,7 @@ jobs:
 
 
   build:
+    needs: get_history
     runs-on: ubuntu-latest
     steps:
 
