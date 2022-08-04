@@ -14,7 +14,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: coverage
-        run: |
+      - run: |
           unzip coverage.zip
 
       - uses: codecov/codecov-action@v3
