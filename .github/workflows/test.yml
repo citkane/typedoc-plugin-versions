@@ -1,11 +1,7 @@
 name: TEST AND BUILD
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["RELEASE AND PUBLISH"]
-    types:
-      - requested
-
+  workflow_call:
 jobs:
   build:
     runs-on: ubuntu-latest
