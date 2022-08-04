@@ -11,6 +11,7 @@
 | --- | --- |
 | <img src="./media/Screenshot.jpg" width="500px" height="auto" border="1px solid light-grey" /> | **It keeps track of your document builds and provides a select menu for versions.**<br /><br />Built for: <a href = "https://semver.org/" target="_blank">semantic versioning</a>. |
 
+<br /><br />
 ## Usage
 Install:
 ```
@@ -21,6 +22,7 @@ and then set up your environment in typedoc.json
 "plugin": ["typedoc-plugin-versions"],
 "versions": { /*...options */ }
 ```
+<br /><br />
 ## Options
 | Key | Value Information | Type | Required | Default |
 |:---:|-------------------|------|:--------:|---------|
@@ -31,12 +33,12 @@ and then set up your environment in typedoc.json
 
 <br /><br />
 ## "What sorcery is this?", you may ask...
-`Typedoc-plugin-versions` takes the architectural approach of [JuliaLang Documenter](https://juliadocs.github.io/Documenter.jl/stable/).
+Typedoc-plugin-versions takes the architectural approach of [JuliaLang Documenter](https://juliadocs.github.io/Documenter.jl/stable/).
 
 Documents are built into subdirectories corresponding to the package.json version.  
 Symlinks are created to minor versions, which are given as options in a `select` menu.
 
-As long as you do not delete your historic document build folders, the document history will remain intact.
+As long as you do not delete your historic document build folders, the document history remains intact.
 
 If you want to remove a historic version, delete the old folder and rebuild your documentation.
 
