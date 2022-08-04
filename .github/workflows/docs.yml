@@ -4,7 +4,7 @@ on:
   workflow_call:
   # or set up your own custom triggers
 permissions:
-  contents: write # allows the 'Deploy' step without tokens
+  contents: write # allows the 'Commit' step without tokens
 
 jobs:
   get_history: # create an artifact from the existing documentation builds
@@ -17,7 +17,9 @@ jobs:
         ref: gh-pages
 
     - name: tar the existing docs
-      run: tar -cvf documentation.tar ./docs
+      run: |
+        mkdir -p ./docs
+        tar -cvf documentation.tar ./docs
 
     - name: create a document artifact
       uses: actions/upload-artifact@v3
@@ -25,16 +27,16 @@ jobs:
         name: documentation
         path: documentation.tar
 
-  build:
+  build: # builds the distribution and then the documentation
     needs: get_history
     runs-on: ubuntu-latest
     steps:
 
-      - name: Checkout src # checks out the source code into the active workspace
+      - name: Checkout src
         uses: actions/checkout@v3
 
       - run: mkdir -p ./docs
-      - name: Download the existing documents artifact # retrieves and un-archives the existing documents
+      - name: Download the existing documents artifact
         uses: actions/download-artifact@v3
         with:
           name: documentation
@@ -45,14 +47,44 @@ jobs:
         with:
           node-version: 16.x
           cache: 'npm'
-      - run: npm ci # installs npm packages
+      - run: npm ci
       - run: npm run build # set up 'build' script in your package.json
 
       - name: Build documents
         run: npm run docs #set up 'docs' build script in your package.json
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+
+      - name: tar the new docs
+        run: tar -cvf newdocumentation.tar ./docs
+
+      - name: create a new document artifact
+        uses: actions/upload-artifact@v3
         with:
-          folder: docs          # take the 'docs' folder in the current workspace
-          target-folder: docs   # and put it's content in the 'docs' folder of gh-pages 
+          name: newdocumentation
+          path: newdocumentation.tar
+
+  commit: # commit the old and new merged documents to gh-pages/docs
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: checkout the gh-pages repo
+      uses: actions/checkout@v3
+      with:
+        ref: gh-pages
+
+    - run: mkdir -p ./docs
+    - name: Download the new documents artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: newdocumentation
+    - run: tar -xf newdocumentation.tar ./docs -C ./docs
+    
+    - name: commit
+      run: |
+        git config --global user.email "username@users.noreply.github.com"
+        git config --global user.name "Continuous Integration"
+        git add .
+        git commit -m "CI updated the documentation"
+        git push
+
