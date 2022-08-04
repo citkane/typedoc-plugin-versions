@@ -29,9 +29,11 @@ export function getGhPageUrl(repository: {url} = pack.repository) {
  * Gets the package version defined in package.json
  * @param version
  * @returns The package version
+ * @todo grab potential labels from the version and provide them as further pegs in the menu.
  */
 export function getSemanticVersion(version: string | null = pack.version): patchVersion {
 	!version && (()=>{throw new Error('Package version was not found')})();
+	version = version.split('-')[0];
 	!verRegex.test(version) &&(()=>{throw new Error(`version is not semantically formatted: ${version}`)});
 	!version.startsWith('v') && (version = `v${version}`);
 
@@ -46,6 +48,8 @@ export function getMinorVersion(version?: string): minorVersion{
 	let minorVers;
 	if (!version) {
 		version = getSemanticVersion()
+	} else {
+		version = version.split('-')[0];		
 	}
 	minorVers = version.split('.');
 	(minorVers.length === 3) && minorVers.pop();
