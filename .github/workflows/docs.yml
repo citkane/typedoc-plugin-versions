@@ -16,7 +16,6 @@ jobs:
       with:
         ref: gh-pages
 
-    - run: mkdir -p ./docs
     - name: tar the existing docs
       run: tar -cvf documentation.tar ./docs
 
