@@ -44,7 +44,7 @@ jobs:
           name: documentation
       - run: | 
           ls
-          tar -xf documentation.tar -C ./docs
+          tar -xf documentation.tar ./docs -C ./docs
           ls -R
 
       - name: Build
