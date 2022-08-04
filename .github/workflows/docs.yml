@@ -13,18 +13,22 @@ jobs:
   get_history:
     runs-on: ubuntu-latest
     steps:
-
+    - run: ls -R
     - name: get the gh-pages repo
       uses: actions/checkout@v3
       with:
         ref: gh-pages
 
+    - run: ls -R
+    - name: tar the existing docs
+      run: tar - cvf documentation.tar ./docs
+
     - name: create a document artifact
       uses: actions/upload-artifact@v3
       with:
         name: documentation
-        path: ./docs
-
+        path: documentation.tar
+    
 
   build:
     needs: get_history
@@ -39,8 +43,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: documentation
-          path: ./docs
-      - run: ls -R
+      - run: | 
+          ls
+          tar -xf documentation.tar -C ./docs
+          ls -R
 
       - name: Build
         uses: actions/setup-node@v3
