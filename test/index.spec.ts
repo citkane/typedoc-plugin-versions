@@ -40,6 +40,10 @@ describe('Unit testing for typedoc-plugin-versions', function(){
 		it('retrieves minor value from package.json', function(){
 			assert.match(vUtils.getMinorVersion(), minorVerRegex, 'did not return a correctly formatted minor version')
 		})
+		it('discards patch from semantic version string', function(){
+			assert.match(vUtils.getSemanticVersion('v11.10.09-label'), verRegex, 'did not strip the label from version string')
+		})
+
 	})
 	describe('parses and processes directories', function(){
 		it('retrieves semantically named directories into a list', function(){
