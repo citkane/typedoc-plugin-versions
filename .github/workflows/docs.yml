@@ -13,6 +13,7 @@ jobs:
   get_history:
     runs-on: ubuntu-latest
     steps:
+
     - name: get the gh-pages repo
       uses: actions/checkout@v3
       with:
@@ -32,8 +33,8 @@ jobs:
       - name: Checkout src # checks out the source code into the active workspace
         uses: actions/checkout@v3
 
-      - name: Download the existing documents artifact
       - run: mkdir -p ./docs
+      - name: Download the existing documents artifact
         uses: actions/download-artifact@v3
         with:
           name: documentation
