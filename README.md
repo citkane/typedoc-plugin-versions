@@ -1,7 +1,7 @@
 [![RELEASE AND PUBLISH](https://github.com/citkane/typedoc-plugin-versions/actions/workflows/release.yml/badge.svg)](https://github.com/citkane/typedoc-plugin-versions/actions/workflows/release.yml)
 [![codecov](https://codecov.io/gh/citkane/typedoc-plugin-versions/branch/main/graph/badge.svg?token=5DDL83JO0R)](https://codecov.io/gh/citkane/typedoc-plugin-versions)
 [![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/citkane/typedoc-plugin-versions)
-[![Npm](https://badgen.net/badge/icon/npm?icon=npm&label)](https://https://npmjs.com/package/typedoc-plugin-versions)
+[![Npm](https://badgen.net/badge/icon/npm?icon=npm&label)](https://npmjs.com/package/typedoc-plugin-versions)
 [![docs stable](https://img.shields.io/badge/docs-stable-teal.svg)](https://citkane.github.io/typedoc-plugin-versions/stable)
 [![docs stable](https://img.shields.io/badge/docs-dev-teal.svg)](https://citkane.github.io/typedoc-plugin-versions/dev)
 
