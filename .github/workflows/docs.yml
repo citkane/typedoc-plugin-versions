@@ -1,10 +1,7 @@
 name: PUBLISH DOCS
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["RELEASE AND PUBLISH"]
-    types:
-      - completed
+  workflow_call:
   # or set up your own custom triggers
 permissions:
   contents: write # allows the 'Deploy' step without tokens
