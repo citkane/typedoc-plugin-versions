@@ -48,3 +48,8 @@ jobs:
           tag_name: ${{ env.RELEASE_NAME }}
           files: typedoc-plugin-versions-*.tgz
 
+  document:
+    needs: release
+    uses: ./.github/workflows/docs.yml
+    
+

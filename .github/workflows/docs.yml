@@ -10,12 +10,35 @@ permissions:
   contents: write # allows the 'Deploy' step without tokens
 
 jobs:
+  get_history:
+    runs-on: ubuntu-latest
+    steps:
+    - name: get the gh-pages repo
+      uses: actions/checkout@v3
+      with:
+        ref: gh-pages
+
+    - name: create a document artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation
+        path: ./docs
+
+
   build:
     runs-on: ubuntu-latest
-
     steps:
+
       - name: Checkout src # checks out the source code into the active workspace
         uses: actions/checkout@v3
+
+      - name: Download the existing documents artifact
+      - run: mkdir -p ./docs
+        uses: actions/download-artifact@v3
+        with:
+          name: documentation
+          path: ./docs
+      - run: ls -R
 
       - name: Build
         uses: actions/setup-node@v3
@@ -24,20 +47,6 @@ jobs:
           cache: 'npm'
       - run: npm ci # installs npm packages
       - run: npm run build # set up 'build' script in your package.json
-
-      - name: Copy gh-pages into workspace
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages # grabs the gh-pages branch
-          path: tmp     # and puts it into the current workspace 'tmp' folder.  
-                        # This way we nest the gh-pages branch into the current branch workspace
-
-      - name: Move existing document builds into workspace
-        # move the nested ./tmp/docs into ./docs so that typedoc-plugin-versions will build append to
-        # the existing document set
-        run: |
-          mkdir -p ./tmp/docs
-          mv ./tmp/docs ./docs
 
       - name: Build documents
         run: npm run docs #set up 'docs' build script in your package.json
