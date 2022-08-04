@@ -2,18 +2,35 @@ name: RELEASE AND PUBLISH
 on:
   workflow_dispatch:
 jobs:
-
   test:
-    uses: ./.github/workflows/test.yml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/test.yml
+
+  upload_coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: coverage
+        run: |
+          unzip coverage.zip
+
+      - uses: codecov/codecov-action@v3
+        with:
+          files: ./clover.xml
 
   release:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Make build artifact
-        run: npm pack ./dist
+      - name: Download the build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: distribution
 
       - name: Get Package Version
         run: |
@@ -26,10 +43,5 @@ jobs:
           prerelease: false
           generate_release_notes: true
           tag_name: ${{ env.RELEASE_NAME }}
-          files: typedoc-plugin-versions-*.tgz
-
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./test/coverage/clover.xml
+          files: distribution.zip
 
