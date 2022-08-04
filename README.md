@@ -19,29 +19,16 @@ npm i -D typedoc-plugin-versions
 and in typedoc.json
 ```jsonc
 "plugin": ["typedoc-plugin-versions"],
-"versions": { //custom options for versions
-	/**
-	 * The minor version that you would like to be marked as `stable`  
-	 * Defaults to the latest patch version of the version being built
-	 */
-	"stable": "1.1",
-	/**
-	 * The version that you would like to be marked as `dev`  
-	 * Defaults to the latest patch version of the version being built
-	 */
-	"dev": "1.2.19",
-	/**
-	 * The url to the base folder where you will host your documentation set  
-	 * Default: will try to determine the GitHUB package url from package.json and convert it to gh-page url.
-	 */
-	"homeUrl": "https://mydocs.com/docs",
-	/**
-	 * A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks.  
-	 * Default: Injects to left of header using vanilla js - not a typedoc render hook.
-	 */
-	"domLocation": "navigation.begin"
-}
+"versions": { /*...options */ }
 ```
+## Options
+| Key | Value Information | Type | Required | Default |
+|-|-|-|-|-|
+| `stable` | The minor version that you would like to be marked as `stable`   | `string` | **no** | The latest patch version of the version being built |
+| `dev` | The version that you would like to be marked as `dev` | `string` | **no** | The latest patch version of the version being built |
+| `homeUrl` | The url to the base folder where you will host your documentation set | `string` | **no** | will try to determine the GitHUB package url from package.json and convert it to gh-page url. |
+| `domLocation"` | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string` | **no** | Injects to left of header using vanilla js - not a typedoc render hook. |
+
 
 ## "What sorcery is this?", you may ask...
 `Typedoc-plugin-versions` takes the architectural approach of JuliaLang [Documenter](https://juliadocs.github.io/Documenter.jl/stable/).
