@@ -6,9 +6,11 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import * as pack from '../../package.json';
 import { minorVersion, patchVersion, semanticAlias, semanticGroups, version, versionsOptions } from '../types';
 import { Application, Logger, TypeDocReader } from 'typedoc';
+const packagePath = path.join(process.cwd(), 'package.json');
+console.log(packagePath);
+const pack = fs.readJSONSync(packagePath);
 
 /**
  * Attempts to find the github repository location url and parse it into a github pages url. 
