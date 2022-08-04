@@ -33,7 +33,7 @@
 		"nyc": "^15.1.0",
 		"sinon": "^14.0.0",
 		"ts-node": "^10.9.1",
-		"typedoc": "^0.23.9",
+		"typedoc": "file:../yaf-scaffold/node_modules/typedoc",
 		"typescript": "^4.7.4"
 	},
 	"peerDependencies": {
