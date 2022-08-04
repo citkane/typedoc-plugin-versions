@@ -22,12 +22,12 @@ jobs:
           npm run test
 
       - name: Upload code coverage
-      - uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v3
         with:
           files: ./test/coverage/clover.xml
 
       - name: Upload build as artifact 
-      - uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: distribution
           path: ./dist
