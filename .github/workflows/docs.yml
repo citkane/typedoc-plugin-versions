@@ -17,7 +17,9 @@ jobs:
         ref: gh-pages
 
     - name: tar the existing docs
-      run: tar -cvf documentation.tar ./docs
+      run: |
+        mkdir -p ./docs
+        tar -cvf documentation.tar ./docs
 
     - name: create a document artifact
       uses: actions/upload-artifact@v3
