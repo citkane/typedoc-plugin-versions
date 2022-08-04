@@ -22,14 +22,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: mkdir -p ./dist
 
       - name: Download the build artifact
         uses: actions/download-artifact@v3
         with:
           name: distribution
+          path: ./dist
       - run: |
-          pwd
-          ls -Ra
+          ls -R
+
+      - name: Package the build artifact
+        run: npm pack ./dist
 
       - name: Get Package Version
         run: |
@@ -42,5 +46,5 @@ jobs:
           prerelease: false
           generate_release_notes: true
           tag_name: ${{ env.RELEASE_NAME }}
-          files: distribution.zip
+          files: typedoc-plugin-versions-*.tgz
 

@@ -28,7 +28,7 @@ jobs:
           name: coverage
           path: ./test/coverage/clover.xml
 
-      - name: Upload build as artifact
+      - name: Upload build artifact
         if: matrix.node-version == '16.x'
         uses: actions/upload-artifact@v3
         with:
