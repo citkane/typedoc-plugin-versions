@@ -2,12 +2,25 @@ name: RELEASE AND PUBLISH
 on:
   workflow_dispatch:
 jobs:
+
   test:
-    name: Test and Build
     uses: ./.github/workflows/test.yml
 
-  release:
+  build: 
     needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: | 
+          npm ci
+          npm run build
+
+  release:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

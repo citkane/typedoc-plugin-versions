@@ -10,15 +10,25 @@ jobs:
         node-version: [14.x, 15.x, 16.x]
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{matrix.node-version}}
+
+      - name: Test with Node ${{matrix.node-version}}
         uses: actions/setup-node@v3
         with:
           node-version: ${{matrix.node-version}}
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build
-      - run: npm run test
+        run: | 
+          npm ci
+          npm run build
+          npm run test
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v3
         with:
           files: ./test/coverage/clover.xml
+
+      - name: Upload build as artifact 
+        uses: actions/upload-artifact@v3
+        with:
+          name: distribution
+          path: ./dist
+
