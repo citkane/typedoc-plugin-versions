@@ -50,12 +50,37 @@ jobs:
 
       - name: Build documents
       #set up 'docs' build script in your package.json
-        run: |
-          npm run docs
-          ls -R
+        run: npm run docs
+      - name: tar the new docs
+        run: tar -cvf newdocumentation.tar ./docs
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: create a new document artifact
+        uses: actions/upload-artifact@v3
         with:
-          folder: docs          # take the 'docs' folder in the current workspace
-          target-folder: docs   # and put it's content in the 'docs' folder of gh-pages 
+          name: newdocumentation
+          path: newdocumentation.tar
+
+  commit:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: get the gh-pages repo
+      uses: actions/checkout@v3
+      with:
+        ref: gh-pages
+
+    - run: mkdir -p ./docs
+    - name: Download the new documents artifact # retrieves and un-archives the new documents
+      uses: actions/download-artifact@v3
+      with:
+        name: newdocumentation
+    - run: tar -xf newdocumentation.tar ./docs -C ./docs
+    - run: ls -R
+
+    - name: commit
+      run: |
+        git add .
+        git commit -m "Updated documentation"
+        git push
+
