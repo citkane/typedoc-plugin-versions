@@ -28,7 +28,6 @@ jobs:
       with:
         name: documentation
         path: documentation.tar
-    
 
   build:
     needs: get_history
