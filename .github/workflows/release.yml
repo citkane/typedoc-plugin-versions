@@ -25,6 +25,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          draft: false
+          prerelease: false
           tag_name: ${{ env.RELEASE_NAME }}
           files: typedoc-plugin-versions-*.tgz
 
