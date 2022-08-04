@@ -21,7 +21,7 @@ jobs:
 
     - run: ls -R
     - name: tar the existing docs
-      run: tar -cvf documentation.tar ./docs
+      run: tar -cvf documentation.tar -C ./docs
 
     - name: create a document artifact
       uses: actions/upload-artifact@v3
