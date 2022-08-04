@@ -13,7 +13,8 @@ jobs:
         with:
           name: coverage
       - run: |
-          unzip coverage.zip
+          ls -R
+          unzip coverage
 
       - uses: codecov/codecov-action@v3
         with:
