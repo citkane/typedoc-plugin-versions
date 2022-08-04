@@ -202,6 +202,12 @@ export function getVersionsOptions(app: Application): versionsOptions{
 	return {...defaultOpts, ...options };
 }
 
+/**
+ * Resolve the root document path and document build path 
+ * @param app 
+ * @param version 
+ * @returns the paths
+ */
 export function getPaths(app, version?: patchVersion){
 	const rootPath = app.options.getValue('out'); 
 	return {
@@ -209,17 +215,34 @@ export function getPaths(app, version?: patchVersion){
 		targetPath: path.join(rootPath, getSemanticVersion(version))
 	}
 }
+
+/**
+ * Moves .nojeckyll flag file to the documentation root folder
+ * @param rootPath 
+ * @param targetPath 
+ */
 export function handleJeckyll(rootPath: string, targetPath: string): void{
 	const srcJeckPath = path.join(targetPath, '.nojekyll');
 	const targetJeckPath = path.join(rootPath, '.nojekyll');
 	fs.existsSync(targetJeckPath) && fs.removeSync(targetJeckPath);
 	fs.existsSync(srcJeckPath) && fs.moveSync(srcJeckPath, targetJeckPath);
 }
+
+/**
+ * Copies static assets to the document build folder
+ * @param targetPath 
+ */
 export function handleAssets(targetPath: string){
 	const sourceAsset = path.join(process.cwd(), 'src/assets/versionsMenu.js');
 	fs.ensureDirSync(path.join(targetPath, 'assets'));
 	fs.copyFileSync(sourceAsset, path.join(targetPath, 'assets/versionsMenu.js'));
 }
 
+/**
+ * Regex for matching semantic patch version
+ */
 export const verRegex = /^(v\d+|\d+).\d+.\d+/
+/**
+ * regex for matching semantic minor version
+ */
 export const minorVerRegex = /^(v\d+|\d+).\d+$/
