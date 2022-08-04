@@ -15,6 +15,9 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - name: Make build artifact
+        run: npm pack ./dist
+
       - name: Get Package Version
         run: |
           echo "RELEASE_NAME=$(npm info ./ version)" >> $GITHUB_ENV
@@ -23,6 +26,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.RELEASE_NAME }}
-          files: ./dist/**/*
+          files: typedoc-plugin-versions-*.tgz
 
 
