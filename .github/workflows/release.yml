@@ -3,9 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/workflows/test.yml
+    uses: ./.github/workflows/test.yml
 
   upload_coverage:
     needs: test
