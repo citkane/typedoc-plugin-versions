@@ -5,6 +5,5 @@ cp ./README.md ./dist/README.md;
 cp ./LICENSE.txt ./dist/LICENSE.txt;
 cp ./.npmignore ./dist/.npmignore;
 cp ./package.json ./dist/package.json;
-# m -r ./dist/src/assets/;
 mkdir -p ./dist/src/assets/;
 cp ./src/assets/versionsMenu.js ./dist/src/assets/versionsMenu.js;
