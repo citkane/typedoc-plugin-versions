@@ -12,7 +12,8 @@
 | <img src="./media/Screenshot.jpg" width="500px" height="auto" border="1px solid light-grey" /> | **It keeps track of your document builds and provides a select menu for versions.**<br /><br />Built for: <a href = "https://semver.org/" target="_blank">semantic versioning</a>. |
 
 <br /><br />
-## Usage
+### Usage
+---  
 Install:
 ```
 npm i -D typedoc-plugin-versions
@@ -23,7 +24,8 @@ and then set up your environment in typedoc.json
 "versions": { /*...options */ }
 ```
 <br /><br />
-## Options
+### Options
+---  
 | Key | Value Information | Type | Required | Default |
 |:---:|-------------------|------|:--------:|---------|
 | **stable** | The minor version that you would like to be marked as `stable`   | `string` | **no** | The latest minor version of the version being built |
@@ -32,7 +34,8 @@ and then set up your environment in typedoc.json
 | **domLocation** | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string` | **no** | Injects to left of header using vanilla js - not a typedoc render hook. |
 
 <br /><br />
-## "What sorcery is this?", you may ask...
+### "What sorcery is this?", you may ask...
+---  
 Typedoc-plugin-versions takes the architectural approach of [JuliaLang Documenter](https://juliadocs.github.io/Documenter.jl/stable/).
 
 Documents are built into subdirectories corresponding to the package.json version.  
@@ -43,7 +46,8 @@ As long as you do not delete your historic document build folders, the document 
 If you want to remove a historic version, delete the old folder and rebuild your documentation.
 
 <br /><br />
-## CID
+### CID
+---  
 Below is an opinionated Github CI setup. You can hack and change it to suite your needs.
 
 
