@@ -9,8 +9,7 @@
 # typedoc-plugin-versions
 |||
 | --- | --- |
-| <img src="./media/Screenshot.jpg" width="500px" height="auto" border="1px solid light-grey" /> | **It keeps track of your document builds and provides a select menu for versions.**<br /><br />Built around [semantic versioning](https://semver.org/).
- |
+| <img src="./media/Screenshot.jpg" width="500px" height="auto" border="1px solid light-grey" /> | **It keeps track of your document builds and provides a select menu for versions.**<br /><br />Built for: <a href = "https://semver.org/" target="_blank">semantic versioning</a>. |
 
 ## Usage
 Install:
@@ -24,15 +23,15 @@ and then set up your environment in typedoc.json
 ```
 ## Options
 | Key | Value Information | Type | Required | Default |
-|-----|-------------------|------|:--------:|---------|
-| `stable` | The minor version that you would like to be marked as `stable`   | `string` | **no** | The latest minor version of the version being built |
-| `dev` | The version that you would like to be marked as `dev` | `string` | **no** | The latest patch version of the version being built |
-| `homeUrl` | The url to the base folder where you will host your documentation set | `string` | **no** | will try to determine the GitHUB package url from package.json and convert it to gh-page url. |
-| `domLocation` | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string` | **no** | Injects to left of header using vanilla js - not a typedoc render hook. |
+|:---:|-------------------|------|:--------:|---------|
+| **stable** | The minor version that you would like to be marked as `stable`   | `string` | **no** | The latest minor version of the version being built |
+| **dev** | The version that you would like to be marked as `dev` | `string` | **no** | The latest patch version of the version being built |
+| **homeUrl** | The url to the base folder where you will host your documentation set | `string` | **no** | will try to determine the GitHUB package url from package.json and convert it to gh-page url. |
+| **domLocation** | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string` | **no** | Injects to left of header using vanilla js - not a typedoc render hook. |
 
 
 ## "What sorcery is this?", you may ask...
-`Typedoc-plugin-versions` takes the architectural approach of JuliaLang [Documenter](https://juliadocs.github.io/Documenter.jl/stable/).
+`Typedoc-plugin-versions` takes the architectural approach of [JuliaLang Documenter](https://juliadocs.github.io/Documenter.jl/stable/).
 
 Documents are built into subdirectories corresponding to the package.json version.  
 Symlinks are created to minor versions, which are given as options in a `select` menu.
@@ -47,13 +46,13 @@ Below is an opinionated Github CI setup. You can hack and change it to suite you
 
 **How to for Github Actions**:
 - In your project's `package.json`, set up scripts for:
-  - `build` - to build your project, eg. "tsc --outDir ./dist"
-  - `docs` - to build your documents, eg "typedoc --out ./docs"
+  - **build** - to build your project, eg. "tsc --outDir ./dist"
+  - **docs** - to build your documents, eg "typedoc --out ./docs"
 - Ensure that your documents are being built into a folder named `./docs` (or change your workflow file appropriately)
 - Create an empty branch called gh-pages
 - Under your repository's 'Pages' settings, set:
-  - Source: Deploy from a branch
-  - Branch: gh-pages/docs (symlinks won't work in the gh-pages/root folder)
+  - **Source**: Deploy from a branch
+  - **Branch**: gh-pages/docs (symlinks won't work in the gh-pages/root folder)
 - Create a [custom workflow](https://docs.github.com/en/actions/quickstart) as per this template for [PUBLISH DOCS](https://github.com/citkane/typedoc-plugin-versions/blob/main/.github/workflows/docs.yml)
 
 The "PUBLISH DOCS" action will create a rolling update to your document set.
