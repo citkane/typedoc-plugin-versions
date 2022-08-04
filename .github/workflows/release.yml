@@ -28,8 +28,9 @@ jobs:
         with:
           name: distribution
       - run: |
-          ls -R
-          
+          pwd
+          ls -Ra
+
       - name: Get Package Version
         run: |
           echo "RELEASE_NAME=$(npm info ./ version)" >> $GITHUB_ENV
