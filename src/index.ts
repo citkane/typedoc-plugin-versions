@@ -11,6 +11,7 @@ import * as vUtils from './etc/utils';
 import * as vHooks from './etc/hooks';
 import { validLocation, versionsOptions } from './types';
 export * from './types';
+
 /**
  * The default Typedoc [plugin hook](https://typedoc.org/guides/development/#plugins).
  * @param app 

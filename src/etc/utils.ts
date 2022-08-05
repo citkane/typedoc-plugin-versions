@@ -9,7 +9,6 @@ import fs from 'fs-extra';
 import { minorVersion, patchVersion, semanticAlias, semanticGroups, version, versionsOptions } from '../types';
 import { Application, Logger, TypeDocReader } from 'typedoc';
 const packagePath = path.join(process.cwd(), 'package.json');
-console.log(packagePath);
 const pack = fs.readJSONSync(packagePath);
 
 /**
@@ -164,8 +163,8 @@ export function makeStableLink(docRoot: string, semGroups:semanticGroups, pegVer
  export function makeDevLink(docRoot: string, semGroups:semanticGroups, pegVersion: patchVersion, name: semanticAlias = 'dev'): void {
 
 	pegVersion = getSemanticVersion(pegVersion);
-
 	const devSource = path.join(docRoot, pegVersion);
+
 	if (!fs.existsSync(devSource)) throw new Error(`Document directory does not exist: ${pegVersion}`);
 	const devTarget = path.join(docRoot, name);
 	fs.existsSync(devTarget) && fs.unlinkSync(devTarget);
