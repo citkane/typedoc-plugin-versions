@@ -65,10 +65,11 @@ jobs:
           node-version: '16.x'
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
-      - run: |
-          npm ci
-          npm publish ./dist
-          
+      - run: npm ci
+      - run: npm publish ./dist
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   document:
     needs: release
     uses: ./.github/workflows/docs.yml
