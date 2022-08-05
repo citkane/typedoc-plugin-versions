@@ -46,6 +46,29 @@ jobs:
           tag_name: ${{ env.RELEASE_NAME }}
           files: typedoc-plugin-versions-*.tgz
 
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: mkdir -p ./dist
+
+      - name: Download the build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: distribution
+          path: ./dist
+
+      - name: Publish to npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+      - run: |
+          npm ci
+          npm publish ./dist
+          
   document:
     needs: release
     uses: ./.github/workflows/docs.yml
