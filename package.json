@@ -1,7 +1,7 @@
 {
 	"name": "typedoc-plugin-versions",
-	"version": "0.0.2",
-	"description": "Provides typedoc versioning with a dropdown selector",
+	"version": "0.0.3",
+	"description": "It keeps track of your document builds and provides a select menu for versions",
 	"main": "src/index",
 	"scripts": {
 		"test": "nyc mocha",
@@ -12,6 +12,11 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/citkane/typedoc-plugin-versions.git"
+	},
+	"homepage": "https://github.com/citkane/typedoc-plugin-versions#readme",
+	"engines": {
+		"npm": ">=6.0.0",
+		"node": ">=14.0.0"
 	},
 	"keywords": [
 		"typedoc",
