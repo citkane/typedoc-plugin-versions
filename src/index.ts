@@ -4,7 +4,7 @@
  * @module
  */
 
-import { Application, ParameterType, RendererEvent } from 'typedoc';
+import { Application, Logger, ParameterType, RendererEvent } from 'typedoc';
 import path from 'path';
 import fs from 'fs-extra';
 import * as vUtils from './etc/utils';
@@ -38,11 +38,16 @@ export function load(app: Application) {
 
 	const {rootPath, targetPath} = vUtils.getPaths(app);
 
-	const originalGenerateDocs = app.generateDocs.bind(app);
-	app.generateDocs = (project, out) => {
-		return originalGenerateDocs(project, targetPath);
+	/**
+	 * This is the latest moment possible to inject the modified 'out' location
+	 * before typedoc freezes the options. 
+	 */
+	const originalReadOptions = app.options.read.bind(app.options)
+	app.options.read = (logger: Logger) => {
+		originalReadOptions(logger);
+		targetPath && (app.options['_values']['out'] = targetPath);
 	}
-	
+
 	/**
 	 * The documents have rendered and we now process directories into the select options
 	 * @event RendererEvent.END
