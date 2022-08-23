@@ -5,7 +5,7 @@
 	"main": "src/index",
 	"scripts": {
 		"test": "prettier -c . && nyc mocha",
-		"build": "./build.sh",
+		"build": "npx tsc && node ./build.js",
 		"docs": "typedoc",
 		"docs:build": "tsc && typedoc"
 	},
