@@ -18,21 +18,6 @@ const packagePath = path.join(process.cwd(), 'package.json');
 const pack = fs.readJSONSync(packagePath);
 
 /**
- * Attempts to find the github repository location url and parse it into a github pages url.
- * @param repository
- * @returns The github pages url or a dummy url
- */
-export function getGhPageUrl(repository: { url } = pack.repository) {
-	if (!repository || !repository.url) {
-		return 'http://localhost:5500/docs';
-	}
-	const splitUrl = repository.url.split('/');
-	const gitName = splitUrl[3];
-	const repoName = splitUrl[4].split('.')[0];
-	return `https://${gitName}.github.io/${repoName}`;
-}
-
-/**
  * Gets the package version defined in package.json
  * @param version
  * @returns The package version
@@ -145,20 +130,6 @@ export const DOC_VERSIONS = [
 ];
 `;
 	return js;
-}
-
-/**
- * Creates a string (of HTML) that re-directs to the 'stable' documentation url.
- * @param docRoot The root url of the documentation site
- * @returns a string of valid HTML
- */
-export function makeIndex(docRoot: string) {
-	const baseUrl = new URL(docRoot);
-	const newUrl = new URL(
-		path.join(baseUrl.pathname, 'stable'),
-		baseUrl.origin
-	);
-	return `<meta http-equiv="refresh" content="0; url=${newUrl.href}"/>`;
 }
 
 /**

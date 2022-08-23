@@ -25,7 +25,6 @@ export function load(app: Application) {
 		defaultValue: {
 			stable: vUtils.getMinorVersion(),
 			dev: vUtils.getSemanticVersion(),
-			homeUrl: vUtils.getGhPageUrl(),
 			domLocation: 'false',
 		} as versionsOptions,
 	});
@@ -65,8 +64,10 @@ export function load(app: Application) {
 		const jsVersionKeys = vUtils.makeJsKeys(semGroups);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);
 
-		const htmlIndex = vUtils.makeIndex(vOptions.homeUrl);
-		fs.writeFileSync(path.join(rootPath, 'index.html'), htmlIndex);
+		fs.writeFileSync(
+			path.join(rootPath, 'index.html'),
+			'<meta http-equiv="refresh" content="0; url=stable"/>'
+		);
 	});
 
 	return vOptions;

@@ -19,11 +19,6 @@ export interface versionsOptions {
 	 */
 	dev?: patchVersion;
 	/**
-	 * The url to the base folder where you will host your documentation set
-	 * Default: will try to determine the GitHUB package url from package.json and convert it to gh-page url.
-	 */
-	homeUrl?: string;
-	/**
 	 * A custom DOM location to render the HTML `select` dropdown corresponding to [typedoc render hooks](https://typedoc.org/api/interfaces/RendererHooks.html)
 	 * Default: Injects to left of header using vanilla js - not a typedoc render hook.
 	 */

@@ -21,6 +21,3 @@ export const DOC_VERSIONS = [
 	'dev'
 ];
 `;
-
-export const htmlRedirect =
-	'<meta http-equiv="refresh" content="0; url=http://localhost:5500/docs/stable"/>';

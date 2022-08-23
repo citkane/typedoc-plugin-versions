@@ -5,7 +5,6 @@ import * as vUtils from '../src/etc/utils';
 import { minorVerRegex, verRegex } from '../src/etc/utils';
 import {
 	docsPath,
-	htmlRedirect,
 	jsKeys,
 	stubOptionKeys,
 	stubPathKeys,
@@ -26,24 +25,6 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 		);
 	});
 
-	describe('parsing for documentation root url', function () {
-		it('parses git url to gh-page url', function () {
-			assert.equal(
-				vUtils.getGhPageUrl({
-					url: 'git+https://github.com/username/repository.git',
-				}),
-				'https://username.github.io/repository',
-				'did not parse gh-pages url correctly'
-			);
-		});
-		it('provides a default document url if none given', function () {
-			assert.equal(
-				vUtils.getGhPageUrl({ url: null }),
-				'http://localhost:5500/docs',
-				'did not provide a default document url'
-			);
-		});
-	});
 	describe('retrieving package version', function () {
 		it('retrieves patch value from package.json', function () {
 			assert.match(
@@ -102,14 +83,6 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				vUtils.makeJsKeys(semGroups),
 				jsKeys,
 				'did not create a valid js string'
-			);
-		});
-		it('creates a redirect string for index.html', function () {
-			const url = vUtils.getGhPageUrl({ url: null });
-			assert.equal(
-				vUtils.makeIndex(url),
-				htmlRedirect,
-				'did not create a valid htm redirect string'
 			);
 		});
 	});
