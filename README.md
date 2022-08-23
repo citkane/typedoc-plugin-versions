@@ -36,11 +36,11 @@ and then set up your environment in typedoc.json
 
 ---
 
-| Key               | Value Information                                                                                                         | Type     | Required | Default                                                                                       |
-| :---------------- | ------------------------------------------------------------------------------------------------------------------------- | -------- | :------: | --------------------------------------------------------------------------------------------- |
-| **_stable_**      | The minor version that you would like to be marked as `stable`                                                            | `string` |  **no**  | The latest minor version of the version being built                                           |
-| **_dev_**         | The version that you would like to be marked as `dev`                                                                     | `string` |  **no**  | The latest patch version of the version being built                                           |
-| **_domLocation_** | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string` |  **no**  | Injects to left of header using vanilla js - not a typedoc render hook.                       |
+| Key               | Value Information                                                                                                         | Type     | Required | Default                                                                 |
+| :---------------- | ------------------------------------------------------------------------------------------------------------------------- | -------- | :------: | ----------------------------------------------------------------------- |
+| **_stable_**      | The minor version that you would like to be marked as `stable`                                                            | `string` |  **no**  | The latest minor version of the version being built                     |
+| **_dev_**         | The version that you would like to be marked as `dev`                                                                     | `string` |  **no**  | The latest patch version of the version being built                     |
+| **_domLocation_** | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string` |  **no**  | Injects to left of header using vanilla js - not a typedoc render hook. |
 
 <br /><br />
 

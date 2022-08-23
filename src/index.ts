@@ -64,7 +64,10 @@ export function load(app: Application) {
 		const jsVersionKeys = vUtils.makeJsKeys(semGroups);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);
 
-		fs.writeFileSync(path.join(rootPath, 'index.html'), '<meta http-equiv="refresh" content="0; url=stable"/>');
+		fs.writeFileSync(
+			path.join(rootPath, 'index.html'),
+			'<meta http-equiv="refresh" content="0; url=stable"/>'
+		);
 	});
 
 	return vOptions;
