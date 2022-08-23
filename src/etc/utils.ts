@@ -210,7 +210,8 @@ export function getVersionsOptions(app: Application): versionsOptions{
  * @returns the paths
  */
 export function getPaths(app, version?: patchVersion){
-	const rootPath = app.options.getValue('out'); 
+	const defaultRootPath = path.join(process.cwd(), 'docs');
+	const rootPath = app.options.getValue('out') || defaultRootPath; 
 	return {
 		rootPath,
 		targetPath: path.join(rootPath, getSemanticVersion(version))
