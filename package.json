@@ -1,10 +1,10 @@
 {
 	"name": "typedoc-plugin-versions",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "It keeps track of your document builds and provides a select menu for versions",
 	"main": "src/index",
 	"scripts": {
-		"test": "nyc mocha",
+		"test": "prettier -c . && nyc mocha",
 		"build": "./build.sh",
 		"docs": "typedoc",
 		"docs:build": "tsc && typedoc"
@@ -27,15 +27,23 @@
 	],
 	"author": "Michael Jonker",
 	"license": "MIT",
+	"dependencies": {
+		"fs-extra": "^10.1.0"
+	},
 	"devDependencies": {
 		"@types/chai": "^4.3.1",
 		"@types/fs-extra": "^9.0.13",
 		"@types/mocha": "^9.1.1",
 		"@types/node": "^18.6.2",
+		"@types/prettier": "^2.7.0",
+		"@typescript-eslint/eslint-plugin": "^5.34.0",
+		"@typescript-eslint/parser": "^5.34.0",
 		"chai": "^4.3.6",
-		"fs-extra": "^10.1.0",
+		"eslint": "^8.22.0",
+		"eslint-config-prettier": "^8.5.0",
 		"mocha": "^10.0.0",
 		"nyc": "^15.1.0",
+		"prettier": "^2.7.1",
 		"sinon": "^14.0.0",
 		"ts-node": "^10.9.1",
 		"typedoc": "^0.23.10",
