@@ -1,5 +1,5 @@
 {
-	"include" : ["src"],
+	"include": ["src"],
 	"compilerOptions": {
 		"jsx": "react",
 		"jsxFactory": "JSX.createElement",
@@ -14,10 +14,7 @@
 		"declarationMap": true,
 		"sourceMap": true,
 		"build": true,
-		"incremental": true,
+		"incremental": true
 	},
-	"exclude": [
-		"./node_modules",
-		"./package.json"
-	]
+	"exclude": ["./node_modules", "./package.json"]
 }

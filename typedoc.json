@@ -1,9 +1,7 @@
 {
 	"$schema": "https://typedoc.org/schema.json",
 	"out": "./docs",
-	"entryPoints": [
-		"./src/index.ts"
-	],
+	"entryPoints": ["./src/index.ts"],
 	"media": "./media",
 	"treatWarningsAsErrors": false,
 	"externalPattern": ["**/node_modules/**"],
@@ -12,7 +10,7 @@
 	"plugin": ["./dist"],
 	"includeVersion": true,
 	"versions": {
-		"stable":"0.0",
+		"stable": "0.0",
 		"homeUrl": "http://localhost:5501/docs"
 	}
 }
