@@ -6,6 +6,9 @@ on:
         types: [opened, reopened, edited]
         branches:
             - 'dev'
+    push:
+        branches:
+            - 'dev'
 jobs:
     build:
         runs-on: ubuntu-latest
