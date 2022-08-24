@@ -10,6 +10,6 @@
 	"plugin": ["./dist"],
 	"includeVersion": true,
 	"versions": {
-		"stable": "0.0"
+		"stable": "0.1"
 	}
 }
