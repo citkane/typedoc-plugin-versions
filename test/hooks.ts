@@ -36,6 +36,6 @@ export const mochaHooks = {
 
 const deleteFolders = (folders: string[]) => {
 	folders.forEach((folder) => {
-		fs.existsSync(folder) && fs.rmdirSync(folder, { recursive: true });
+		fs.existsSync(folder) && fs.rmSync(folder, { recursive: true });
 	});
 };
