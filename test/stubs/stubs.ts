@@ -9,7 +9,6 @@ export const stubOptionKeys = ['stable', 'dev', 'domLocation'];
 export const stubPathKeys = ['rootPath', 'targetPath'];
 export const stubRootPath =
 	process.platform === 'win32' ? '\\test\\stubs\\docs' : '/test/stubs/docs';
-console.log(stubRootPath);
 export const stubTargetPath = (version) =>
 	path.join(stubRootPath, getSemanticVersion(version));
 
