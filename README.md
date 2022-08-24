@@ -7,15 +7,14 @@
 
 # ↹ typedoc-plugin-versions
 
-|                                                                                                |                                                                                                                                                                                    |
-| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="./media/Screenshot.jpg" width="500px" height="auto" border="1px solid light-grey" /> | **It keeps track of your document builds and provides a select menu for versions.**<br /><br />Built for: <a href = "https://semver.org/" target="_blank">semantic versioning</a>. |
+<img src="./media/Screenshot.jpg" width="300px" height="auto" border="1px solid light-grey" /><br><br>
+**It keeps track of your document builds and provides a select menu for versions.**
+<br /><br />
+Built for: <a href = "https://semver.org/" target="_blank">semantic versioning</a>.
 
 <br /><br />
 
-### Usage
-
----
+## Usage
 
 Install:
 
@@ -32,9 +31,7 @@ and then set up your environment in typedoc.json
 
 <br /><br />
 
-### Options
-
----
+## Options
 
 | Key               | Value Information                                                                                                         | Type     | Required | Default                                                                 |
 | :---------------- | ------------------------------------------------------------------------------------------------------------------------- | -------- | :------: | ----------------------------------------------------------------------- |
@@ -44,9 +41,7 @@ and then set up your environment in typedoc.json
 
 <br /><br />
 
-### "What sorcery is this?", you may ask...
-
----
+## "What sorcery is this?", you may ask...
 
 Typedoc-plugin-versions takes the architectural approach of [JuliaLang Documenter](https://juliadocs.github.io/Documenter.jl/stable/).
 
@@ -59,9 +54,7 @@ If you want to remove a historic version, delete the old folder and rebuild your
 
 <br /><br />
 
-### CID
-
----
+## CID
 
 Below is an opinionated Github CI setup. You can hack and change it to suite your needs.
 
@@ -78,3 +71,7 @@ Below is an opinionated Github CI setup. You can hack and change it to suite you
 -   Create a [custom workflow](https://docs.github.com/en/actions/quickstart) as per [this template](https://github.com/citkane/typedoc-plugin-versions/blob/main/.github/workflows/docs.yml) for PUBLISH DOCS.
 
 The "PUBLISH DOCS" action will create a rolling update to your document set.
+
+<br /><br />
+## Development Guidelines and howto's
+Please refer to the [Wiki Page](https://github.com/citkane/typedoc-plugin-versions/wiki/Development-Guidelines).
