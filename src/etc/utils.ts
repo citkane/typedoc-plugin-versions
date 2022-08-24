@@ -160,7 +160,7 @@ export function makeStableLink(
 	stableSource = path.join(docRoot, stableSource);
 	const stableTarget = path.join(docRoot, name);
 	fs.existsSync(stableTarget) && fs.unlinkSync(stableTarget);
-	fs.createSymlinkSync(stableSource, stableTarget, 'dir');
+	fs.ensureSymlinkSync(stableSource, stableTarget, 'junction');
 }
 
 /**
@@ -183,7 +183,7 @@ export function makeDevLink(
 		throw new Error(`Document directory does not exist: ${pegVersion}`);
 	const devTarget = path.join(docRoot, name);
 	fs.existsSync(devTarget) && fs.unlinkSync(devTarget);
-	fs.createSymlinkSync(devSource, devTarget, 'dir');
+	fs.ensureSymlinkSync(devSource, devTarget, 'junction');
 }
 
 /**
@@ -198,7 +198,7 @@ export function makeMinorVersionLinks(semGroups, docRoot): void {
 			const target = path.join(docRoot, `${major}.${minor}`);
 			const src = path.join(docRoot, `${major}.${minor}.${patch}`);
 			fs.existsSync(target) && fs.unlinkSync(target);
-			fs.createSymlinkSync(src, target, 'dir');
+			fs.ensureSymlinkSync(src, target, 'junction');
 		});
 	});
 }
