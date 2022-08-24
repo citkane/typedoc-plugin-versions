@@ -1,11 +1,11 @@
 {
 	"name": "typedoc-plugin-versions",
-	"version": "0.0.5",
+	"version": "0.1.0",
 	"description": "It keeps track of your document builds and provides a select menu for versions",
 	"main": "src/index",
 	"scripts": {
 		"test": "prettier -c . && nyc mocha",
-		"build": "./build.sh",
+		"build": "npx tsc && node ./build.js",
 		"docs": "typedoc",
 		"docs:build": "tsc && typedoc"
 	},
