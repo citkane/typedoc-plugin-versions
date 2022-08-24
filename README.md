@@ -73,5 +73,7 @@ Below is an opinionated Github CI setup. You can hack and change it to suite you
 The "PUBLISH DOCS" action will create a rolling update to your document set.
 
 <br /><br />
+
 ## Development Guidelines and howto's
+
 Please refer to the [Wiki Page](https://github.com/citkane/typedoc-plugin-versions/wiki/Development-Guidelines).
