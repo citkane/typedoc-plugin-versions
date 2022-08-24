@@ -97,7 +97,9 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				'did not create a stable symlink'
 			);
 			assert.isTrue(
-				fs.readlinkSync(link).endsWith('test/stubs/docs/v0.1.1'),
+				/test[/|\\]stubs[/|\\]docs[/|\\]v0.1.1$/.test(
+					fs.readlinkSync(link)
+				),
 				'did not link the stable symlink correctly'
 			);
 			assert.throws(() => {
@@ -111,7 +113,9 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 			const link = path.join(docsPath, 'dev');
 			assert.isTrue(fs.existsSync(link), 'did not create a dev symlink');
 			assert.isTrue(
-				fs.readlinkSync(link).endsWith('test/stubs/docs/v0.1.0'),
+				/test[/|\\]stubs[/|\\]docs[/|\\]v0.1.0/.test(
+					fs.readlinkSync(link)
+				),
 				'did not link the dev symlink correctly'
 			);
 			assert.throws(() => {
