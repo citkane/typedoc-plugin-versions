@@ -55,13 +55,13 @@ export function load(app: Application) {
 		vUtils.handleJeckyll(rootPath, targetPath);
 
 		const directories = vUtils.getPackageDirectories(rootPath);
-		const semGroups = vUtils.getSemGroups(directories);
+		const semVers = vUtils.getSemVers(directories);
 
-		vUtils.makeStableLink(rootPath, semGroups, vOptions.stable);
-		vUtils.makeDevLink(rootPath, semGroups, vOptions.dev);
-		vUtils.makeMinorVersionLinks(semGroups, rootPath);
+		vUtils.makeStableLink(rootPath, semVers, vOptions.stable);
+		vUtils.makeDevLink(rootPath, vOptions.dev);
+		vUtils.makeMinorVersionLinks(semVers, rootPath);
 
-		const jsVersionKeys = vUtils.makeJsKeys(semGroups);
+		const jsVersionKeys = vUtils.makeJsKeys(semVers);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);
 
 		fs.writeFileSync(

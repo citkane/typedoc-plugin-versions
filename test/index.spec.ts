@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import path from 'path';
 import fs from 'fs-extra';
+import semver from 'semver';
 import * as vUtils from '../src/etc/utils';
 import { minorVerRegex, verRegex } from '../src/etc/utils';
 import {
@@ -33,11 +34,6 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				'did not provided a correctly formatted patch version'
 			);
 		});
-		it('throws error if version not defined', function () {
-			assert.throws(() => {
-				vUtils.getSemanticVersion(null);
-			}, 'Package version was not found');
-		});
 		it('retrieves minor value from package.json', function () {
 			assert.match(
 				vUtils.getMinorVersion(),
@@ -57,30 +53,26 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 		it('retrieves semantically named directories into a list', function () {
 			assert.deepEqual(
 				vUtils.getPackageDirectories(docsPath),
-				['v0.0.0', 'v0.1.0', 'v0.1.1'],
+				['v0.0.0', 'v0.1.0', 'v0.1.1', 'v0.10.1', 'v0.2.3'],
 				'did not retrieve all semanticly named directories'
 			);
 		});
-		it('groups semantic versions correctly with highest patch', function () {
+		it('lists semantic versions correctly with highest patch', function () {
 			const directories = vUtils.getPackageDirectories(docsPath);
 			assert.deepEqual(
-				vUtils.getSemGroups(directories),
-				{
-					v0: {
-						'0': 0,
-						'1': 1,
-					},
-				},
-				'did not return a correctly formatted semantic group object'
+				vUtils.getSemVers(directories),
+				['0.10.1', '0.2.3', '0.1.1', '0.0.0'].map((x) =>
+					semver.parse(x, true)
+				)
 			);
 		});
 	});
 	describe('creates browser assets', function () {
 		it('creates a valid js string from the sematic groups', function () {
 			const directories = vUtils.getPackageDirectories(docsPath);
-			const semGroups = vUtils.getSemGroups(directories);
+			const semVers = vUtils.getSemVers(directories);
 			assert.equal(
-				vUtils.makeJsKeys(semGroups),
+				vUtils.makeJsKeys(semVers),
 				jsKeys,
 				'did not create a valid js string'
 			);
@@ -89,8 +81,8 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 	describe('creates symlinks', function () {
 		it('creates a stable version symlink', function () {
 			const directories = vUtils.getPackageDirectories(docsPath);
-			const semGroups = vUtils.getSemGroups(directories);
-			vUtils.makeStableLink(docsPath, semGroups, '0.1');
+			const semVers = vUtils.getSemVers(directories);
+			vUtils.makeStableLink(docsPath, semVers, 'v0.1');
 			const link = path.join(docsPath, 'stable');
 			assert.isTrue(
 				fs.existsSync(link),
@@ -103,13 +95,11 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				'did not link the stable symlink correctly'
 			);
 			assert.throws(() => {
-				vUtils.makeStableLink(docsPath, semGroups, '0.11');
+				vUtils.makeStableLink(docsPath, semVers, 'v0.11');
 			}, 'Document directory does not exist: v0.11');
 		});
 		it('creates a dev version symlink', function () {
-			const directories = vUtils.getPackageDirectories(docsPath);
-			const semGroups = vUtils.getSemGroups(directories);
-			vUtils.makeDevLink(docsPath, semGroups, '0.1.0');
+			vUtils.makeDevLink(docsPath, 'v0.1.0');
 			const link = path.join(docsPath, 'dev');
 			assert.isTrue(fs.existsSync(link), 'did not create a dev symlink');
 			assert.isTrue(
@@ -119,13 +109,13 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				'did not link the dev symlink correctly'
 			);
 			assert.throws(() => {
-				vUtils.makeDevLink(docsPath, semGroups, '0.11.1');
+				vUtils.makeDevLink(docsPath, 'v0.11.1');
 			}, 'Document directory does not exist: v0.11.1');
 		});
 		it('creates all minor version links', function () {
 			const directories = vUtils.getPackageDirectories(docsPath);
-			const semGroups = vUtils.getSemGroups(directories);
-			vUtils.makeMinorVersionLinks(semGroups, docsPath);
+			const semVers = vUtils.getSemVers(directories);
+			vUtils.makeMinorVersionLinks(semVers, docsPath);
 			stubSemanticLinks.forEach((link) => {
 				const linkPath = path.join(docsPath, link);
 				assert.isTrue(
@@ -137,7 +127,7 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 	});
 	describe('handle file operations correctly', function () {
 		const app = new Application();
-		const version = '0.0.0';
+		const version = 'v0.0.0';
 		app.options.setValue('out', docsPath);
 		const dirs = vUtils.getPaths(app, version);
 		it('maps correct output paths', function () {
