@@ -63,7 +63,8 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				vUtils.getSemVers(directories),
 				['0.10.1', '0.2.3', '0.1.1', '0.0.0'].map((x) =>
 					semver.parse(x, true)
-				)
+				),
+				'did not return a correctly formatted SemVer[] array'
 			);
 		});
 	});
