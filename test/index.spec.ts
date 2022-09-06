@@ -66,10 +66,8 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 			const directories = vUtils.getPackageDirectories(docsPath);
 			assert.deepEqual(
 				vUtils.getVersions(directories),
-				['0.10.1', '0.2.3', '0.1.1', '0.1.0', '0.0.0'].map((x) =>
-					vUtils.getSemanticVersion(x)
-				),
-				'did not return a correctly formatted SemVer[] array'
+				['v0.10.1', 'v0.2.3', 'v0.1.1', 'v0.1.0', 'v0.0.0'],
+				'did not return a correctly formatted version[] array'
 			);
 		});
 	});
