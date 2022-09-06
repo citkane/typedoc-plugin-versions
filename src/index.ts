@@ -23,8 +23,8 @@ export function load(app: Application) {
 		name: 'versions',
 		type: ParameterType.Mixed,
 		defaultValue: {
-			stable: vUtils.getMinorVersion(),
-			dev: vUtils.getSemanticVersion(),
+			stable: 'auto',
+			dev: 'auto',
 			domLocation: 'false',
 		} as versionsOptions,
 	});
@@ -55,13 +55,32 @@ export function load(app: Application) {
 		vUtils.handleJeckyll(rootPath, targetPath);
 
 		const directories = vUtils.getPackageDirectories(rootPath);
-		const semVers = vUtils.getSemVers(directories);
+		const versions = vUtils.getVersions(directories);
+		const stable = vUtils.getAliasVersion(
+			'stable',
+			vOptions.stable,
+			rootPath,
+			vOptions.stable,
+			vOptions.dev
+		);
+		const dev = vUtils.getAliasVersion(
+			'dev',
+			vOptions.dev,
+			rootPath,
+			vOptions.stable,
+			vOptions.dev
+		);
 
-		vUtils.makeStableLink(rootPath, semVers, vOptions.stable);
-		vUtils.makeDevLink(rootPath, vOptions.dev);
-		vUtils.makeMinorVersionLinks(semVers, rootPath);
+		vUtils.makeAliasLink('stable', rootPath, stable);
+		vUtils.makeAliasLink('dev', rootPath, dev);
+		vUtils.makeMinorVersionLinks(versions, rootPath);
 
-		const jsVersionKeys = vUtils.makeJsKeys(semVers);
+		const jsVersionKeys = vUtils.makeJsKeys(
+			versions,
+			rootPath,
+			vOptions.stable,
+			vOptions.dev
+		);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);
 
 		fs.writeFileSync(

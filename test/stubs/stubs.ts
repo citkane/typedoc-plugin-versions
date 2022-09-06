@@ -12,15 +12,12 @@ export const stubRootPath =
 export const stubTargetPath = (version) =>
 	path.join(stubRootPath, getSemanticVersion(version));
 
-export const jsKeys = `
-"use strict"
-
+export const jsKeys = `"use strict"
 export const DOC_VERSIONS = [
-	'stable',
+	'dev',
 	'v0.10',
 	'v0.2',
 	'v0.1',
 	'v0.0',
-	'dev'
 ];
 `;
