@@ -30,7 +30,7 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 			assert.match(
 				vUtils.getSemanticVersion(),
 				verRegex,
-				'did not provided a correctly formatted patch version'
+				'did not provide a correctly formatted patch version'
 			);
 			assert.equal(vUtils.getSemanticVersion('0.0.0'), 'v0.0.0');
 			assert.equal(vUtils.getSemanticVersion('0.2.0'), 'v0.2.0');
@@ -39,6 +39,12 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				vUtils.getSemanticVersion('1.2.0-alpha.1'),
 				'v1.2.0-alpha.1'
 			);
+		});
+		it('throws error if version not defined', function () {
+			assert.throws(() => {
+				// @ts-expect-error: Intentionally passing a falsy value to test the error condition.
+				vUtils.getSemanticVersion(null);
+			}, 'Package version was not found');
 		});
 		it('retrieves minor value from package.json', function () {
 			assert.match(
