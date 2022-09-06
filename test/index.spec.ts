@@ -31,8 +31,14 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 			assert.match(
 				vUtils.getSemanticVersion(),
 				verRegex,
-				'did not provided a correctly formatted patch version'
+				'did not provide a correctly formatted patch version'
 			);
+		});
+		it('throws error if version not defined', function () {
+			assert.throws(() => {
+				// @ts-expect-error: Intentionally passing a falsy value to test the error condition.
+				vUtils.getSemanticVersion(null);
+			}, 'Package version was not found');
 		});
 		it('retrieves minor value from package.json', function () {
 			assert.match(
