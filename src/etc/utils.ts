@@ -6,13 +6,8 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import {
-	minorVersion,
-	patchVersion,
-	semanticAlias,
-	semanticGroups,
-	versionsOptions,
-} from '../types';
+import semver, { SemVer } from 'semver';
+import { version, semanticAlias, versionsOptions } from '../types';
 import { Application, Logger, TypeDocReader } from 'typedoc';
 const packagePath = path.join(process.cwd(), 'package.json');
 const pack = fs.readJSONSync(packagePath);
@@ -23,47 +18,30 @@ const pack = fs.readJSONSync(packagePath);
  * @returns The package version
  * @todo grab potential labels from the version and provide them as further pegs in the menu.
  */
-export function getSemanticVersion(
-	version: string | null = pack.version
-): patchVersion {
+export function getSemanticVersion(version: string = pack.version): version {
 	!version &&
 		(() => {
 			throw new Error('Package version was not found');
 		})();
-	version = version.split('-')[0];
-	!verRegex.test(version) &&
-		(() => {
-			throw new Error(
-				`version is not semantically formatted: ${version}`
-			);
-		});
-	!version.startsWith('v') && (version = `v${version}`);
 
-	return version as patchVersion;
+	const semVer = semver.coerce(version, { loose: true });
+
+	if (!semVer) {
+		throw new Error(`version is not semantically formatted: ${version}`);
+	}
+
+	return `v${semVer.version}`;
 }
 
 /**
  * Drops the patch from a semantic version string
  * @returns a minor version string in the for 0.0
  */
-export function getMinorVersion(version?: string): minorVersion {
-	if (!version) {
-		version = getSemanticVersion();
-	} else {
-		version = version.split('-')[0];
-	}
-	const minorVers = version.split('.');
-	minorVers.length === 3 && minorVers.pop();
-	version = minorVers.join('.');
-	!minorVerRegex.test(version) &&
-		(() => {
-			throw new Error(
-				`version is not semantically formatted: ${version}`
-			);
-		});
-	!version.startsWith('v') && (version = `v${version}`);
+export function getMinorVersion(version?: string): version {
+	version = getSemanticVersion(version);
 
-	return version as minorVersion;
+	const { major, minor } = semver.coerce(version, { loose: true });
+	return `v${major}.${minor}`;
 }
 
 /**
@@ -71,11 +49,11 @@ export function getMinorVersion(version?: string): minorVersion {
  * @param docRoot
  * @returns an array of directories
  */
-export function getPackageDirectories(docRoot): [string] {
+export function getPackageDirectories(docRoot: string): string[] {
 	return fs.readdirSync(docRoot).filter((file) => {
 		const stats = fs.statSync(path.join(docRoot, file));
-		return stats.isDirectory() && verRegex.test(file);
-	}) as [string];
+		return stats.isDirectory() && semver.valid(file, true) !== null;
+	}) as string[];
 }
 
 /**
@@ -83,49 +61,37 @@ export function getPackageDirectories(docRoot): [string] {
  * @param directories an array of semantically named directories to be processed
  * @returns
  */
-export function getSemGroups(directories: [string]): semanticGroups {
-	const semGroups: semanticGroups = {};
-	directories.forEach((dir) => {
-		const [major, minor, patch] = dir.split('.') as [
-			string,
-			string,
-			number
-		];
-		if (typeof patch !== 'undefined') {
-			const _patch = patch * 1;
-			!semGroups[major] && (semGroups[major] = {});
-			(!semGroups[major][minor] || semGroups[major][minor] < _patch) &&
-				(semGroups[major][minor] = _patch);
-		}
-	});
-	return semGroups;
+export function getSemVers(directories: string[]): SemVer[] {
+	return directories
+		.map((dir) => semver.coerce(dir, { loose: true })) // parse directory names to SemVer instances (convert to (SemVer | null)[])
+		.filter((v) => v instanceof SemVer) // discard nulls (convert to SemVer[])
+		.sort(semver.rcompare) // sort in descending order
+		.filter(
+			// only include highest patch number per major.minor version & ensure each entry is unique
+			(value, index, self) =>
+				self.indexOf(
+					self.find((x) =>
+						semver.satisfies(x, `${value.major}.${value.minor}.x`)
+					)
+				) === index && self.indexOf(value) === index
+		);
 }
 
 /**
  * Creates a string (of javascript) defining an array of all the versions to be included in the frontend select
- * @param semGroups
+ * @param semVers
  * @returns
  */
-export function makeJsKeys(semGroups: semanticGroups): string {
-	const semVersions = [];
-	Object.keys(semGroups)
-		.sort()
-		.reverse()
-		.forEach((major) => {
-			Object.keys(semGroups[major])
-				.sort()
-				.reverse()
-				.forEach((minor) => semVersions.push(`${major}.${minor}`));
-		});
+export function makeJsKeys(semVers: SemVer[]): string {
 	let js = `
 "use strict"
 
 export const DOC_VERSIONS = [
 	'stable',
 `;
-	semVersions.forEach((version) => {
+	for (const version of semVers.map((v) => getMinorVersion(v.version))) {
 		js += `	'${version}',\n`;
-	});
+	}
 	js += `	'dev'
 ];
 `;
@@ -135,29 +101,28 @@ export const DOC_VERSIONS = [
 /**
  * Creates a symlink for the stable release
  * @param docRoot
- * @param semGroups
+ * @param semVers
  * @param pegVersion
  * @param name
  */
 export function makeStableLink(
 	docRoot: string,
-	semGroups: semanticGroups,
-	pegVersion: minorVersion,
+	semVers: SemVer[],
+	pegVersion: version,
 	name: semanticAlias = 'stable'
 ): void {
 	pegVersion = getMinorVersion(pegVersion);
 
-	const stableArray = pegVersion.split('.');
-	if (
-		typeof semGroups[stableArray[0]] === 'undefined' ||
-		typeof semGroups[stableArray[0]][stableArray[1]] === 'undefined'
-	) {
+	const version = semver.coerce(pegVersion, { loose: true });
+	const srcVer = semVers.find((v) =>
+		semver.satisfies(v, `${version.major}.${version.minor}.x`)
+	);
+
+	if (!srcVer) {
 		throw new Error(`Document directory does not exist: ${pegVersion}`);
 	}
-	let stableSource = `${stableArray[0]}.${stableArray[1]}.${
-		semGroups[stableArray[0]][stableArray[1]]
-	}`;
-	stableSource = path.join(docRoot, stableSource);
+
+	const stableSource = path.join(docRoot, getSemanticVersion(srcVer.version));
 	const stableTarget = path.join(docRoot, name);
 	fs.existsSync(stableTarget) && fs.unlinkSync(stableTarget);
 	fs.ensureSymlinkSync(stableSource, stableTarget, 'junction');
@@ -166,14 +131,12 @@ export function makeStableLink(
 /**
  * Creates a symlink for the dev release
  * @param docRoot
- * @param semGroups
  * @param pegVersion
  * @param name
  */
 export function makeDevLink(
 	docRoot: string,
-	semGroups: semanticGroups,
-	pegVersion: patchVersion,
+	pegVersion: version,
 	name: semanticAlias = 'dev'
 ): void {
 	pegVersion = getSemanticVersion(pegVersion);
@@ -191,16 +154,16 @@ export function makeDevLink(
  * @param semGroups
  * @param docRoot
  */
-export function makeMinorVersionLinks(semGroups, docRoot): void {
-	Object.keys(semGroups).forEach((major) => {
-		Object.keys(semGroups[major]).forEach((minor) => {
-			const patch = semGroups[major][minor];
-			const target = path.join(docRoot, `${major}.${minor}`);
-			const src = path.join(docRoot, `${major}.${minor}.${patch}`);
-			fs.existsSync(target) && fs.unlinkSync(target);
-			fs.ensureSymlinkSync(src, target, 'junction');
-		});
-	});
+export function makeMinorVersionLinks(
+	semVers: SemVer[],
+	docRoot: string
+): void {
+	for (const v of semVers) {
+		const target = path.join(docRoot, getMinorVersion(v.version));
+		const src = path.join(docRoot, getSemanticVersion(v.version));
+		fs.existsSync(target) && fs.unlinkSync(target);
+		fs.ensureSymlinkSync(src, target, 'junction');
+	}
 }
 
 /**
@@ -222,7 +185,7 @@ export function getVersionsOptions(app: Application): versionsOptions {
  * @param version
  * @returns the paths
  */
-export function getPaths(app, version?: patchVersion) {
+export function getPaths(app, version?: version) {
 	const defaultRootPath = path.join(process.cwd(), 'docs');
 	const rootPath = app.options.getValue('out') || defaultRootPath;
 	return {

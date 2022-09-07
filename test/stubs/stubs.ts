@@ -3,8 +3,8 @@ import { getSemanticVersion } from '../../src/etc/utils';
 
 export const stubsPath = __dirname;
 export const docsPath = path.join(stubsPath, 'docs');
-export const stubVersions = ['v0.0.0', 'v0.1.0', 'v0.1.1'];
-export const stubSemanticLinks = ['v0.0', 'v0.1'];
+export const stubVersions = ['v0.0.0', 'v0.1.0', 'v0.1.1', 'v0.2.3', 'v0.10.1'];
+export const stubSemanticLinks = ['v0.0', 'v0.1', 'v0.2', 'v0.10'];
 export const stubOptionKeys = ['stable', 'dev', 'domLocation'];
 export const stubPathKeys = ['rootPath', 'targetPath'];
 export const stubRootPath =
@@ -17,6 +17,8 @@ export const jsKeys = `
 
 export const DOC_VERSIONS = [
 	'stable',
+	'v0.10',
+	'v0.2',
 	'v0.1',
 	'v0.0',
 	'dev'
