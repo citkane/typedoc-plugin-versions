@@ -7,16 +7,204 @@
 import path from 'path';
 import fs from 'fs-extra';
 import semver from 'semver';
-import { version, semanticAlias, versionsOptions } from '../types';
+import { version, semanticAlias, versionsOptions, metadata } from '../types';
 import { Application, Logger, TypeDocReader } from 'typedoc';
 const packagePath = path.join(process.cwd(), 'package.json');
 const pack = fs.readJSONSync(packagePath);
 
 /**
+ * Gets the docs metadata file path.
+ * @param docRoot The path to the docs root.
+ * @returns The metadata file path.
+ */
+export function getMetadataPath(docRoot: string): string {
+	return path.join(docRoot, '.typedoc-plugin-versions');
+}
+
+/**
+ * Loads the docs metadata file and retreives its data.
+ * @param docRoot The path to the docs root.
+ * @returns An object containing the docs metadata.
+ */
+export function loadMetadata(docRoot: string): metadata {
+	try {
+		return fs.readJsonSync(getMetadataPath(docRoot));
+	} catch {
+		return {};
+	}
+}
+
+/**
+ * Audits and updates a given {@link metadata} object.
+ * @param metadata The metadata to refresh.
+ * @param docRoot The path to the docs root.
+ * @param [stable='auto'] The {@link version} set in the typedoc options for the 'stable' alias.
+ * @param [dev='auto'] The {@link version} set in the options for the 'dev' alias.
+ * @returns The refreshed {@link metadata}.
+ */
+export function refreshMetadata(
+	metadata: metadata,
+	docRoot: string,
+	stable = 'auto',
+	dev = 'auto'
+): metadata {
+	const validate = (v: string) => (v === 'auto' ? v : getSemanticVersion(v));
+	const vStable = validate(stable);
+	const vDev = validate(dev);
+
+	const versions = refreshMetadataVersions(
+		[...(metadata.versions ?? []), metadata.stable, metadata.dev],
+		docRoot
+	);
+
+	return {
+		versions,
+		stable: refreshMetadataAlias('stable', versions, vStable, vDev),
+		dev: refreshMetadataAlias('dev', versions, vStable, vDev),
+	};
+}
+
+/**
+ * Audits an array of {@link version versions}, ensuring they all still exist, and adds newly found {@link version versions} to the array.
+ * @param versions The array of {@link version versions} to refresh.
+ * @param docRoot The path to the docs root.
+ * @returns A distinct array of {@link version versions}, sorted in descending order.
+ */
+export function refreshMetadataVersions(versions: version[], docRoot: string) {
+	return (
+		[
+			// metadata versions
+			...versions
+				// filter down to directories that still exist
+				.filter((version) => {
+					try {
+						const vPath = path.join(docRoot, version);
+						return (
+							fs.pathExistsSync(vPath) &&
+							fs.statSync(vPath).isDirectory() &&
+							semver.valid(version, true) !== null
+						);
+					} catch {
+						return false; // discard undefined values
+					}
+				})
+				// ensure consistent format
+				.map((version) => getSemanticVersion(version)),
+
+			// also include any other semver directories that exist in docs
+			...getVersions(getPackageDirectories(docRoot)),
+
+			// package.json version
+			getSemanticVersion(),
+
+			// stable and dev symlinks
+			getSymlinkVersion('stable', docRoot),
+			getSymlinkVersion('dev', docRoot),
+		]
+			// discard undefined && filter to unique values only
+			.filter((v, i, s) => v !== undefined && s.indexOf(v) === i)
+			// sort in descending order
+			.sort(semver.rcompare)
+	);
+}
+
+/**
+ * Refreshes a version {@link semanticAlias alias} (e.g. 'stable' or 'dev').
+ * @param alias The {@link semanticAlias alias} to refresh.
+ * @param versions An array of known, valid {@link version versions}.
+ * @param [stable='auto'] The {@link version} set in the typedoc options for the 'stable' {@link semanticAlias alias}.
+ * @param [dev='auto'] The {@link version} set in the options for the 'dev' {@link semanticAlias alias}.
+ * @returns The refreshed {@link version} the {@link semanticAlias alias} should point to, or undefined if no match was found.
+ */
+export function refreshMetadataAlias(
+	alias: semanticAlias,
+	versions: version[],
+	stable: 'auto' | version = 'auto',
+	dev: 'auto' | version = 'auto'
+): version {
+	const option = alias === 'stable' ? stable : dev;
+	if (
+		option && // the option is set
+		option !== 'auto' && // option is not 'auto'
+		versions.includes(getSemanticVersion(option)) // the version set in the option exists in the known versions
+	) {
+		return getSemanticVersion(option); // user has explicitly specified a valid version, use it
+	} else {
+		const latest = getLatestVersion(alias, versions, stable, dev); // in auto mode, get latest version for the alias
+		if (
+			latest &&
+			(alias !== 'dev' ||
+				!getLatestVersion('stable', versions, stable, dev) ||
+				semver.gte(
+					latest,
+					getLatestVersion('stable', versions, stable, dev),
+					true
+				))
+		) {
+			return getSemanticVersion(latest);
+		}
+	}
+}
+
+/**
+ * Saves a given {@link metadata} object to disk.
+ * @param metadata The {@link metadata} object.
+ * @param docRoot The path to the docs root.
+ */
+export function saveMetadata(metadata: metadata, docRoot: string): void {
+	fs.writeJsonSync(getMetadataPath(docRoot), metadata);
+}
+
+/**
+ * Gets the latest valid {@link version} for a given {@link semanticAlias alias}.
+ * @param alias The {@link semanticAlias alias}.
+ * @param versions An array of known, valid {@link version versions}.
+ * @param [stable='auto'] The {@link version} set in the typedoc options for the 'stable' {@link semanticAlias alias}.
+ * @param [dev='auto'] The {@link version} set in the options for the 'dev' {@link semanticAlias alias}.
+ * @returns The latest matching {@link version}, or undefined if no match was found.
+ */
+export function getLatestVersion(
+	alias: semanticAlias,
+	versions: version[],
+	stable: 'auto' | version = 'auto',
+	dev: 'auto' | version = 'auto'
+): version {
+	return [...versions]
+		.sort(semver.rcompare)
+		.find((v) => getVersionAlias(v, stable, dev) === alias);
+}
+
+/**
+ * Gets the {@link semanticAlias alias} of the given version, e.g. 'stable' or 'dev'.
+ * @remarks
+ * Versions {@link https://semver.org/#spec-item-4 lower than 1.0.0} or
+ * {@link https://semver.org/#spec-item-9 with a pre-release label} (e.g. 1.0.0-alpha.1)
+ * will be considered 'dev'. All other versions will be considered 'stable'.
+ * @param [version] Defaults to the version from `package.json`
+ * @param [stable='auto'] The {@link version} set in the typedoc options for the 'stable' alias.
+ * @param [dev='auto'] The {@link version} set in the options for the 'dev' alias.
+ * @returns The {@link semanticAlias alias} of the given version.
+ */
+export function getVersionAlias(
+	version?: string,
+	stable: 'auto' | version = 'auto',
+	dev: 'auto' | version = 'auto'
+): semanticAlias {
+	version = getSemanticVersion(version);
+	if (stable !== 'auto' && version === getSemanticVersion(stable))
+		// version is marked as stable by user
+		return 'stable';
+	else if (dev !== 'auto' && version === getSemanticVersion(dev))
+		// version is marked as dev by user
+		return 'dev';
+	// semver.satisfies() automatically filters out prerelease versions by default
+	else return semver.satisfies(version, '>=1.0.0', true) ? 'stable' : 'dev';
+}
+
+/**
  * Gets the package version defined in package.json
  * @param version
  * @returns The package version
- * @todo grab potential labels from the version and provide them as further pegs in the menu.
  */
 export function getSemanticVersion(version: string = pack.version): version {
 	if (!version) {
@@ -52,51 +240,40 @@ export function getMinorVersion(version?: string): version {
  */
 export function getPackageDirectories(docRoot: string): string[] {
 	return fs.readdirSync(docRoot).filter((file) => {
-		const stats = fs.statSync(path.join(docRoot, file));
-		return stats.isDirectory() && semver.valid(file, true) !== null;
+		const filePath = path.join(docRoot, file);
+		return (
+			fs.pathExistsSync(filePath) &&
+			fs.statSync(filePath).isDirectory() &&
+			semver.valid(file, true) !== null
+		);
 	}) as string[];
 }
 
 /**
- * Gets a list of semantic versions from a list of directories, sorted in descending order.
+ * Gets a list of semantic versions from a list of directories.
  * @param directories An array of semantically named directories to be processed
- * @returns An array of {@link version versions}, sorted in descending order.
+ * @returns An array of {@link version versions}
  */
 export function getVersions(directories: string[]): version[] {
 	return directories
 		.filter((dir) => semver.coerce(dir, { loose: true }))
-		.map((dir) => getSemanticVersion(dir))
-		.sort(semver.rcompare);
+		.map((dir) => getSemanticVersion(dir));
 }
 
 /**
  * Creates a string (of javascript) defining an array of all the versions to be included in the frontend select
- * @param versions
- * @param docRoot
- * @param [stable='auto'] The version set in the options for the 'dev' alias.
- * @param [dev='auto'] The version set in the options for the 'dev' alias.
+ * @param metadata
  * @returns
  */
-export function makeJsKeys(
-	versions: version[],
-	docRoot: string,
-	stable: 'auto' | version = 'auto',
-	dev: 'auto' | version = 'auto'
-): string {
-	const stableVer = getSymlinkVersion('stable', docRoot);
-	const devVer = getSymlinkVersion('dev', docRoot);
-	const alias = getVersionAlias(stableVer, stable, dev);
+export function makeJsKeys(metadata: metadata): string {
+	const alias = metadata.stable ? 'stable' : 'dev';
 	const keys = [
 		alias, // add initial key (stable or dev)
-		...versions // add the major.minor versions
+		...metadata.versions // add the major.minor versions
 			.map((v) => getMinorVersion(v))
 			.filter((v, i, s) => s.indexOf(v) === i),
 	];
-	if (
-		alias !== 'dev' && // initial key is not dev
-		((dev !== 'auto' && devVer === getSemanticVersion(dev)) || // explicit dev version
-			semver.lt(stableVer, devVer, true)) // dev version newer than stable
-	) {
+	if (alias !== 'dev' && metadata.dev) {
 		keys.push('dev');
 	}
 	// finally, create the js string
@@ -123,10 +300,11 @@ export function makeAliasLink(
 	pegVersion = getSemanticVersion(pegVersion);
 	const stableSource = path.join(docRoot, pegVersion);
 
-	if (!fs.existsSync(stableSource))
+	if (!fs.pathExistsSync(stableSource))
 		throw new Error(`Document directory does not exist: ${pegVersion}`);
 	const stableTarget = path.join(docRoot, alias);
-	fs.existsSync(stableTarget) && fs.unlinkSync(stableTarget);
+	if (fs.lstatSync(stableTarget, { throwIfNoEntry: false })?.isSymbolicLink())
+		fs.unlinkSync(stableTarget);
 	fs.ensureSymlinkSync(stableSource, stableTarget, 'junction');
 }
 
@@ -170,8 +348,32 @@ export function makeMinorVersionLinks(
 		.filter((v, i, s) => s.indexOf(v) === i)) {
 		const target = path.join(docRoot, getMinorVersion(version));
 		const src = path.join(docRoot, version);
-		fs.existsSync(target) && fs.unlinkSync(target);
+		if (fs.lstatSync(target, { throwIfNoEntry: false })?.isSymbolicLink())
+			fs.unlinkSync(target);
 		fs.ensureSymlinkSync(src, target, 'junction');
+	}
+}
+
+/**
+ * Gets the {@link version} a given symlink is pointing to.
+ * @param symlink The symlink path, relative to {@link docRoot}.
+ * @param docRoot The path to the docs root.
+ * @returns The version number parsed from the given symlink.
+ */
+export function getSymlinkVersion(symlink: string, docRoot: string): version {
+	const symlinkPath = path.join(docRoot, symlink);
+	if (
+		fs.pathExistsSync(symlinkPath) &&
+		fs.lstatSync(symlinkPath).isSymbolicLink()
+	) {
+		const targetPath = fs.readlinkSync(symlinkPath);
+		if (
+			fs.pathExistsSync(targetPath) &&
+			fs.statSync(targetPath).isDirectory()
+		) {
+			// retrieve the version the symlink is pointing to
+			return getSemanticVersion(path.basename(targetPath));
+		}
 	}
 }
 
@@ -226,94 +428,6 @@ export function handleAssets(targetPath: string, srcDir: string = __dirname) {
 		sourceAsset,
 		path.join(targetPath, 'assets/versionsMenu.js')
 	);
-}
-
-/**
- * Gets the {@link semanticAlias alias} of the given version, e.g. 'stable' or 'dev'.
- * @remarks
- * Versions {@link https://semver.org/#spec-item-4 lower than 1.0.0} or
- * {@link https://semver.org/#spec-item-9 with a pre-release label} (e.g. 1.0.0-alpha.1)
- * will be considered 'dev'. All other versions will be considered 'stable'.
- * @param [version] Defaults to the version from `package.json`
- * @param [stable='auto'] The version set in the typedoc options for the 'stable' alias.
- * @param [dev='auto'] The version set in the options for the 'dev' alias.
- * @returns The {@link semanticAlias alias} of the given version.
- */
-export function getVersionAlias(
-	version?: string,
-	stable: 'auto' | version = 'auto',
-	dev: 'auto' | version = 'auto'
-): semanticAlias {
-	version = getSemanticVersion(version);
-	if (stable !== 'auto' && version === getSemanticVersion(stable))
-		// version is marked as stable by user
-		return 'stable';
-	else if (dev !== 'auto' && version === getSemanticVersion(dev))
-		// version is marked as dev by user
-		return 'dev';
-	// semver.satisfies() automatically filters out prerelease versions by default
-	else return semver.satisfies(version, '>=1.0.0', true) ? 'stable' : 'dev';
-}
-
-/**
- * Automatically parses the version number for a given {@link semanticAlias alias} based on
- * typedoc options.
- * @param alias The alias to parse, e.g. 'stable' or 'dev'.
- * @param version The version set in the typedoc options for the alias.
- * @param docRoot The path to the docs root.
- * @param [stable='auto'] The version set in the typedoc options for the 'stable' alias.
- * @param [dev='auto'] The version set in the options for the 'dev' alias.
- * @returns The automatically parsed version number which should be used for the given alias.
- */
-export function getAliasVersion(
-	alias: semanticAlias,
-	version: 'auto' | version,
-	docRoot: string,
-	stable: 'auto' | version = 'auto',
-	dev: 'auto' | version = 'auto'
-): version {
-	if (version !== 'auto') {
-		return getSemanticVersion(version); // user has explicitly specified a version, use it
-	}
-
-	// no explicit version set for alias, check if package version is a match
-	const packageVersion = getSemanticVersion();
-	if (getVersionAlias(packageVersion, stable, dev) === alias) {
-		// package version matches the alias
-		return packageVersion;
-	}
-
-	// package version is not a match, check symlink for alias
-	const symlinkVersion = getSymlinkVersion(alias, docRoot);
-	if (
-		symlinkVersion &&
-		getVersionAlias(symlinkVersion, stable, dev) === alias &&
-		(alias === 'stable' || semver.lt(packageVersion, symlinkVersion))
-	) {
-		// version symlinked alias is pointing to is a match
-		return symlinkVersion;
-	}
-
-	// no matches found, fall back to the package version
-	return packageVersion;
-}
-
-/**
- * Gets the {@link version} a given symlink is pointing to.
- * @param symlink The symlink path, relative to {@link docRoot}.
- * @param docRoot The path to the docs root.
- * @returns The version number parsed from the given symlink.
- */
-export function getSymlinkVersion(symlink: string, docRoot: string): version {
-	const symlinkPath = path.join(docRoot, symlink);
-	if (
-		fs.existsSync(symlinkPath) &&
-		fs.lstatSync(symlinkPath).isSymbolicLink()
-	) {
-		// retrieve the version the symlink is pointing to
-		const targetPath = fs.readlinkSync(symlinkPath);
-		return getSemanticVersion(path.basename(targetPath));
-	}
 }
 
 /**

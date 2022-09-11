@@ -37,3 +37,9 @@ export type validLocation =
 	| 'navigation.begin'
 	| 'navigation.end';
 export type semanticAlias = 'stable' | 'dev';
+
+export type metadata = {
+	versions?: version[];
+	stable?: version;
+	dev?: version;
+};

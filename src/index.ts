@@ -54,39 +54,30 @@ export function load(app: Application) {
 		vUtils.handleAssets(targetPath);
 		vUtils.handleJeckyll(rootPath, targetPath);
 
-		const directories = vUtils.getPackageDirectories(rootPath);
-		const versions = vUtils.getVersions(directories);
-		const stable = vUtils.getAliasVersion(
+		const metadata = vUtils.refreshMetadata(
+			vUtils.loadMetadata(rootPath),
+			rootPath,
+			vOptions.stable,
+			vOptions.dev
+		);
+
+		vUtils.makeAliasLink(
 			'stable',
-			vOptions.stable,
 			rootPath,
-			vOptions.stable,
-			vOptions.dev
+			metadata.stable ?? metadata.dev
 		);
-		const dev = vUtils.getAliasVersion(
-			'dev',
-			vOptions.dev,
-			rootPath,
-			vOptions.stable,
-			vOptions.dev
-		);
+		vUtils.makeAliasLink('dev', rootPath, metadata.dev ?? metadata.stable);
+		vUtils.makeMinorVersionLinks(metadata.versions, rootPath);
 
-		vUtils.makeAliasLink('stable', rootPath, stable);
-		vUtils.makeAliasLink('dev', rootPath, dev);
-		vUtils.makeMinorVersionLinks(versions, rootPath);
-
-		const jsVersionKeys = vUtils.makeJsKeys(
-			versions,
-			rootPath,
-			vOptions.stable,
-			vOptions.dev
-		);
+		const jsVersionKeys = vUtils.makeJsKeys(metadata);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);
 
 		fs.writeFileSync(
 			path.join(rootPath, 'index.html'),
 			'<meta http-equiv="refresh" content="0; url=stable"/>'
 		);
+
+		vUtils.saveMetadata(metadata, rootPath);
 	});
 
 	return vOptions;

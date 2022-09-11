@@ -11,6 +11,7 @@ import {
 	stubRootPath,
 	stubSemanticLinks,
 	stubTargetPath,
+	stubVersions,
 } from './stubs/stubs';
 import { Application } from 'typedoc';
 import { load } from '../src/index';
@@ -66,19 +67,51 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 			const directories = vUtils.getPackageDirectories(docsPath);
 			assert.deepEqual(
 				vUtils.getVersions(directories),
-				['v0.10.1', 'v0.2.3', 'v0.1.1', 'v0.1.0', 'v0.0.0'],
+				['v0.0.0', 'v0.1.0', 'v0.1.1', 'v0.10.1', 'v0.2.3'],
 				'did not return a correctly formatted version[] array'
 			);
 		});
 	});
 	describe('creates browser assets', function () {
-		it('creates a valid js string from the sematic groups', function () {
-			const directories = vUtils.getPackageDirectories(docsPath);
-			const versions = vUtils.getVersions(directories);
+		it('creates a valid js string from the semantic groups', function () {
+			const metadata = vUtils.refreshMetadata(
+				vUtils.loadMetadata(docsPath),
+				docsPath
+			);
 			assert.equal(
-				vUtils.makeJsKeys(versions, docsPath),
+				vUtils.makeJsKeys(metadata),
 				jsKeys,
 				'did not create a valid js string'
+			);
+		});
+	});
+	describe('gets latest version', function () {
+		it('correctly gets the latest stable version', function () {
+			assert.equal(
+				vUtils.getLatestVersion(
+					'stable',
+					stubVersions.map((v) => vUtils.getSemanticVersion(v))
+				),
+				undefined
+			);
+
+			assert.equal(
+				vUtils.getLatestVersion('stable', ['v1.0.0', 'v1.1.0-alpha.1']),
+				'v1.0.0'
+			);
+		});
+		it('correctly gets the latest dev version', function () {
+			assert.equal(
+				vUtils.getLatestVersion(
+					'dev',
+					stubVersions.map((v) => vUtils.getSemanticVersion(v))
+				),
+				'v0.10.1'
+			);
+
+			assert.equal(
+				vUtils.getLatestVersion('dev', ['v1.0.0', 'v1.1.0-alpha.1']),
+				'v1.1.0-alpha.1'
 			);
 		});
 	});
@@ -89,32 +122,39 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 			assert.equal(vUtils.getVersionAlias('v1.2.0-alpha.1'), 'dev');
 			assert.equal(vUtils.getVersionAlias('v1.2.0'), 'stable');
 		});
+		const metadata = vUtils.loadMetadata(docsPath);
 		it('infers stable version automatically', function () {
 			assert.equal(
-				vUtils.getAliasVersion('stable', 'auto', docsPath),
-				vUtils.getSemanticVersion()
+				// will fail when our package.json version >= 1.0.0
+				vUtils.refreshMetadata(metadata, docsPath).stable,
+				undefined
 			);
 			assert.equal(
-				vUtils.getAliasVersion('stable', 'v1.0.0', docsPath),
-				'v1.0.0'
+				vUtils.refreshMetadata(metadata, docsPath, '0.2.3').stable,
+				'v0.2.3'
 			);
 			assert.equal(
-				vUtils.getAliasVersion('stable', 'v1.0.0-alpha.1', docsPath),
-				'v1.0.0-alpha.1'
+				// will fail when our package.json version >= 1.0.0
+				vUtils.refreshMetadata(metadata, docsPath, '1.0.0').stable,
+				undefined
 			);
 		});
 		it('infers dev version automatically', function () {
 			assert.equal(
-				vUtils.getAliasVersion('dev', 'auto', docsPath),
-				vUtils.getSemanticVersion()
+				// will fail when our package.json version > 0.10.1
+				vUtils.refreshMetadata(metadata, docsPath).dev,
+				'v0.10.1'
 			);
 			assert.equal(
-				vUtils.getAliasVersion('dev', 'v0.2.0', docsPath),
+				vUtils.refreshMetadata(metadata, docsPath, undefined, '0.2.0')
+					.dev,
 				'v0.2.0'
 			);
 			assert.equal(
-				vUtils.getAliasVersion('dev', 'v0.2.0-alpha.1', docsPath),
-				'v0.2.0-alpha.1'
+				// will fail when our package.json version > 0.10.1
+				vUtils.refreshMetadata(metadata, docsPath, undefined, '1.0.0')
+					.dev,
+				'v0.10.1'
 			);
 		});
 	});
