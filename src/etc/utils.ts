@@ -132,9 +132,9 @@ export function refreshMetadataAlias(
 	} else {
 		const latest = getLatestVersion(alias, versions, stable, dev); // in auto mode, get latest version for the alias
 		if (
-			latest &&
-			(alias !== 'dev' ||
-				!getLatestVersion('stable', versions, stable, dev) ||
+			latest && // return undefined if latest version not set for alias
+			(alias !== 'dev' || // when alias is dev, only return latest dev if >= latest stable
+				!getLatestVersion('stable', versions, stable, dev) || // or there is no matching latest stable
 				semver.gte(
 					latest,
 					getLatestVersion('stable', versions, stable, dev),
