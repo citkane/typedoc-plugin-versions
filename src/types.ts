@@ -12,12 +12,12 @@ export interface versionsOptions {
 	 * The minor version that you would like to be marked as `stable`
 	 * Defaults to the latest patch version of the version being built
 	 */
-	stable?: version;
+	stable?: version | 'auto';
 	/**
 	 * The version that you would like to be marked as `dev`
 	 * Defaults to the latest patch version of the version being built
 	 */
-	dev?: version;
+	dev?: version | 'auto';
 	/**
 	 * A custom DOM location to render the HTML `select` dropdown corresponding to [typedoc render hooks](https://typedoc.org/api/interfaces/RendererHooks.html)
 	 * Default: Injects to left of header using vanilla js - not a typedoc render hook.
@@ -37,3 +37,9 @@ export type validLocation =
 	| 'navigation.begin'
 	| 'navigation.end';
 export type semanticAlias = 'stable' | 'dev';
+
+export type metadata = {
+	versions?: version[];
+	stable?: version;
+	dev?: version;
+};

@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 import path from 'path';
 import fs from 'fs-extra';
-import semver from 'semver';
 import * as vUtils from '../src/etc/utils';
 import { minorVerRegex, verRegex } from '../src/etc/utils';
 import {
@@ -12,6 +11,7 @@ import {
 	stubRootPath,
 	stubSemanticLinks,
 	stubTargetPath,
+	stubVersions,
 } from './stubs/stubs';
 import { Application } from 'typedoc';
 import { load } from '../src/index';
@@ -33,6 +33,13 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				verRegex,
 				'did not provide a correctly formatted patch version'
 			);
+			assert.equal(vUtils.getSemanticVersion('0.0.0'), 'v0.0.0');
+			assert.equal(vUtils.getSemanticVersion('0.2.0'), 'v0.2.0');
+			assert.equal(vUtils.getSemanticVersion('1.2.0'), 'v1.2.0');
+			assert.equal(
+				vUtils.getSemanticVersion('1.2.0-alpha.1'),
+				'v1.2.0-alpha.1'
+			);
 		});
 		it('throws error if version not defined', function () {
 			assert.throws(() => {
@@ -47,13 +54,6 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				'did not return a correctly formatted minor version'
 			);
 		});
-		it('discards patch from semantic version string', function () {
-			assert.match(
-				vUtils.getSemanticVersion('v11.10.09-label'),
-				verRegex,
-				'did not strip the label from version string'
-			);
-		});
 	});
 	describe('parses and processes directories', function () {
 		it('retrieves semantically named directories into a list', function () {
@@ -63,66 +63,125 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				'did not retrieve all semanticly named directories'
 			);
 		});
-		it('lists semantic versions correctly with highest patch', function () {
+		it('lists semantic versions correctly', function () {
 			const directories = vUtils.getPackageDirectories(docsPath);
 			assert.deepEqual(
-				vUtils.getSemVers(directories),
-				['0.10.1', '0.2.3', '0.1.1', '0.0.0'].map((x) =>
-					semver.parse(x, true)
-				),
-				'did not return a correctly formatted SemVer[] array'
+				vUtils.getVersions(directories),
+				['v0.0.0', 'v0.1.0', 'v0.1.1', 'v0.10.1', 'v0.2.3'],
+				'did not return a correctly formatted version[] array'
 			);
 		});
 	});
 	describe('creates browser assets', function () {
-		it('creates a valid js string from the sematic groups', function () {
-			const directories = vUtils.getPackageDirectories(docsPath);
-			const semVers = vUtils.getSemVers(directories);
+		it('creates a valid js string from the semantic groups', function () {
+			const metadata = vUtils.refreshMetadata(
+				vUtils.loadMetadata(docsPath),
+				docsPath
+			);
 			assert.equal(
-				vUtils.makeJsKeys(semVers),
+				vUtils.makeJsKeys(metadata),
 				jsKeys,
 				'did not create a valid js string'
 			);
 		});
 	});
+	describe('gets latest version', function () {
+		it('correctly gets the latest stable version', function () {
+			assert.equal(
+				vUtils.getLatestVersion(
+					'stable',
+					stubVersions.map((v) => vUtils.getSemanticVersion(v))
+				),
+				undefined
+			);
+
+			assert.equal(
+				vUtils.getLatestVersion('stable', ['v1.0.0', 'v1.1.0-alpha.1']),
+				'v1.0.0'
+			);
+		});
+		it('correctly gets the latest dev version', function () {
+			assert.equal(
+				vUtils.getLatestVersion(
+					'dev',
+					stubVersions.map((v) => vUtils.getSemanticVersion(v))
+				),
+				'v0.10.1'
+			);
+
+			assert.equal(
+				vUtils.getLatestVersion('dev', ['v1.0.0', 'v1.1.0-alpha.1']),
+				'v1.1.0-alpha.1'
+			);
+		});
+	});
+	describe('infers stable and dev versions', function () {
+		it('correctly interprets versions as stable or dev', function () {
+			assert.equal(vUtils.getVersionAlias('v0.2.0'), 'dev');
+			assert.equal(vUtils.getVersionAlias('v0.2.0-alpha.1'), 'dev');
+			assert.equal(vUtils.getVersionAlias('v1.2.0-alpha.1'), 'dev');
+			assert.equal(vUtils.getVersionAlias('v1.2.0'), 'stable');
+		});
+		const metadata = vUtils.loadMetadata(docsPath);
+		it('infers stable version automatically', function () {
+			assert.equal(
+				// will fail when our package.json version >= 1.0.0
+				vUtils.refreshMetadata(metadata, docsPath).stable,
+				undefined
+			);
+			assert.equal(
+				vUtils.refreshMetadata(metadata, docsPath, '0.2.3').stable,
+				'v0.2.3'
+			);
+			assert.equal(
+				// will fail when our package.json version >= 1.0.0
+				vUtils.refreshMetadata(metadata, docsPath, '1.0.0').stable,
+				undefined
+			);
+		});
+		it('infers dev version automatically', function () {
+			assert.equal(
+				// will fail when our package.json version > 0.10.1
+				vUtils.refreshMetadata(metadata, docsPath).dev,
+				'v0.10.1'
+			);
+			assert.equal(
+				vUtils.refreshMetadata(metadata, docsPath, undefined, '0.2.0')
+					.dev,
+				'v0.2.0'
+			);
+			assert.equal(
+				// will fail when our package.json version > 0.10.1
+				vUtils.refreshMetadata(metadata, docsPath, undefined, '1.0.0')
+					.dev,
+				'v0.10.1'
+			);
+		});
+	});
 	describe('creates symlinks', function () {
 		it('creates a stable version symlink', function () {
-			const directories = vUtils.getPackageDirectories(docsPath);
-			const semVers = vUtils.getSemVers(directories);
-			vUtils.makeStableLink(docsPath, semVers, 'v0.1');
+			vUtils.makeAliasLink('stable', docsPath, 'v0.1');
 			const link = path.join(docsPath, 'stable');
 			assert.isTrue(
 				fs.existsSync(link),
 				'did not create a stable symlink'
 			);
-			assert.isTrue(
-				/test[/|\\]stubs[/|\\]docs[/|\\]v0.1.[1$|1/$|1\\$]/.test(
-					fs.readlinkSync(link)
-				),
-				'did not link the stable symlink correctly'
-			);
 			assert.throws(() => {
-				vUtils.makeStableLink(docsPath, semVers, 'v0.11');
+				vUtils.makeAliasLink('stable', docsPath, 'v0.11');
 			}, 'Document directory does not exist: v0.11');
 		});
 		it('creates a dev version symlink', function () {
-			vUtils.makeDevLink(docsPath, 'v0.1.0');
+			vUtils.makeAliasLink('dev', docsPath, 'v0.1.0');
 			const link = path.join(docsPath, 'dev');
 			assert.isTrue(fs.existsSync(link), 'did not create a dev symlink');
-			assert.isTrue(
-				/test[/|\\]stubs[/|\\]docs[/|\\]v0.1.[0$|0/$|0\\$]/.test(
-					fs.readlinkSync(link)
-				),
-				'did not link the dev symlink correctly'
-			);
 			assert.throws(() => {
-				vUtils.makeDevLink(docsPath, 'v0.11.1');
+				vUtils.makeAliasLink('dev', docsPath, 'v0.11.1');
 			}, 'Document directory does not exist: v0.11.1');
 		});
 		it('creates all minor version links', function () {
 			const directories = vUtils.getPackageDirectories(docsPath);
-			const semVers = vUtils.getSemVers(directories);
-			vUtils.makeMinorVersionLinks(semVers, docsPath);
+			const versions = vUtils.getVersions(directories);
+			vUtils.makeMinorVersionLinks(versions, docsPath);
 			stubSemanticLinks.forEach((link) => {
 				const linkPath = path.join(docsPath, link);
 				assert.isTrue(

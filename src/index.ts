@@ -23,8 +23,8 @@ export function load(app: Application) {
 		name: 'versions',
 		type: ParameterType.Mixed,
 		defaultValue: {
-			stable: vUtils.getMinorVersion(),
-			dev: vUtils.getSemanticVersion(),
+			stable: 'auto',
+			dev: 'auto',
 			domLocation: 'false',
 		} as versionsOptions,
 	});
@@ -54,20 +54,32 @@ export function load(app: Application) {
 		vUtils.handleAssets(targetPath);
 		vUtils.handleJeckyll(rootPath, targetPath);
 
-		const directories = vUtils.getPackageDirectories(rootPath);
-		const semVers = vUtils.getSemVers(directories);
+		const metadata = vUtils.refreshMetadata(
+			vUtils.loadMetadata(rootPath),
+			rootPath,
+			vOptions.stable,
+			vOptions.dev
+		);
 
-		vUtils.makeStableLink(rootPath, semVers, vOptions.stable);
-		vUtils.makeDevLink(rootPath, vOptions.dev);
-		vUtils.makeMinorVersionLinks(semVers, rootPath);
+		vUtils.makeAliasLink(
+			'stable',
+			rootPath,
+			metadata.stable ?? metadata.dev
+		);
+		vUtils.makeAliasLink('dev', rootPath, metadata.dev ?? metadata.stable);
+		vUtils.makeMinorVersionLinks(metadata.versions, rootPath);
 
-		const jsVersionKeys = vUtils.makeJsKeys(semVers);
+		const jsVersionKeys = vUtils.makeJsKeys(metadata);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);
 
 		fs.writeFileSync(
 			path.join(rootPath, 'index.html'),
-			'<meta http-equiv="refresh" content="0; url=stable"/>'
+			`<meta http-equiv="refresh" content="0; url=${
+				metadata.stable ? 'stable' : 'dev'
+			}"/>`
 		);
+
+		vUtils.saveMetadata(metadata, rootPath);
 	});
 
 	return vOptions;

@@ -10,10 +10,12 @@ DOC_VERSIONS.forEach((version) => {
 });
 
 const locationSplit = location.pathname.split('/');
-const thisVersion = locationSplit.find(
-	(path) => DOC_VERSIONS.indexOf(path) > -1
+const thisVersion = locationSplit.find((path) =>
+	['stable', 'dev', ...DOC_VERSIONS].includes(path)
 );
-select.value = thisVersion;
+select.value = DOC_VERSIONS.includes(thisVersion)
+	? thisVersion
+	: DOC_VERSIONS[0];
 select.onchange = () => {
 	const newPaths = window.location.pathname.replace(
 		`/${thisVersion}/`,
