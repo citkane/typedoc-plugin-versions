@@ -1,9 +1,7 @@
-
 "use strict"
-
 export const DOC_VERSIONS = [
-	'stable',
+	'dev',
+	'v0.2',
 	'v0.1',
 	'v0.0',
-	'dev'
 ];
