@@ -8,8 +8,5 @@
 	"excludeExternals": true,
 	"logLevel": "Verbose",
 	"plugin": ["./dist"],
-	"includeVersion": true,
-	"versions": {
-		"stable": "0.1"
-	}
+	"includeVersion": true
 }
