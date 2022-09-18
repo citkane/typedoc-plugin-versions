@@ -23,7 +23,8 @@
 		"plugin",
 		"typedoc-plugin",
 		"versions",
-		"versioning"
+		"versioning",
+		"typedocplugin"
 	],
 	"author": "Michael Jonker",
 	"contributors": [
