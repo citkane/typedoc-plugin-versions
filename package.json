@@ -1,6 +1,6 @@
 {
 	"name": "typedoc-plugin-versions",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "It keeps track of your document builds and provides a select menu for versions",
 	"main": "src/index",
 	"scripts": {
