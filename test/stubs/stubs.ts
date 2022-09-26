@@ -1,7 +1,6 @@
 import path from 'path';
 import { getSemanticVersion } from '../../src/etc/utils';
 
-export const rootDir = path.join(__dirname, '../../');
 export const stubsPath = __dirname;
 export const docsPath = path.join(stubsPath, 'docs');
 export const stubVersions = ['v0.0.0', 'v0.1.0', 'v0.1.1', 'v0.2.3', 'v0.10.1'];
