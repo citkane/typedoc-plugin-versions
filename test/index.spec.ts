@@ -6,7 +6,6 @@ import { minorVerRegex, verRegex } from '../src/etc/utils';
 import {
 	docsPath,
 	jsKeys,
-	rootDir,
 	stubOptionKeys,
 	stubPathKeys,
 	stubRootPath,
