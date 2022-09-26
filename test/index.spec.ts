@@ -145,10 +145,15 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				vUtils.refreshMetadata(metadata, docsPath).dev,
 				'v0.10.1'
 			);
+			const currentVersion = process.env.npm_package_version;
 			assert.equal(
-				vUtils.refreshMetadata(metadata, docsPath, undefined, '0.2.0')
-					.dev,
-				'v0.2.0'
+				vUtils.refreshMetadata(
+					metadata,
+					docsPath,
+					undefined,
+					currentVersion
+				).dev,
+				'v' + currentVersion
 			);
 			assert.equal(
 				// will fail when our package.json version > 0.10.1
