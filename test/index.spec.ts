@@ -146,11 +146,7 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				vUtils.refreshMetadata(metadata, docsPath).dev,
 				'v0.10.1'
 			);
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
-			const currentVersion = require(path.join(
-				rootDir,
-				'package.json'
-			)).version;
+			const currentVersion = process.env.npm_package_version;
 			assert.equal(
 				vUtils.refreshMetadata(
 					metadata,
