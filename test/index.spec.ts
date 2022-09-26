@@ -6,6 +6,7 @@ import { minorVerRegex, verRegex } from '../src/etc/utils';
 import {
 	docsPath,
 	jsKeys,
+	rootDir,
 	stubOptionKeys,
 	stubPathKeys,
 	stubRootPath,
@@ -145,10 +146,19 @@ describe('Unit testing for typedoc-plugin-versions', function () {
 				vUtils.refreshMetadata(metadata, docsPath).dev,
 				'v0.10.1'
 			);
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const currentVersion = require(path.join(
+				rootDir,
+				'package.json'
+			)).version;
 			assert.equal(
-				vUtils.refreshMetadata(metadata, docsPath, undefined, '0.2.0')
-					.dev,
-				'v0.2.0'
+				vUtils.refreshMetadata(
+					metadata,
+					docsPath,
+					undefined,
+					currentVersion
+				).dev,
+				'v' + currentVersion
 			);
 			assert.equal(
 				// will fail when our package.json version > 0.10.1
