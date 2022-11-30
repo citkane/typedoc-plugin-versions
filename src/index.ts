@@ -75,7 +75,7 @@ export function load(app: Application) {
 		fs.writeFileSync(
 			path.join(rootPath, 'index.html'),
 			`<meta http-equiv="refresh" content="0; url=${
-				metadata.stable ? 'stable' : 'dev'
+				metadata.stable ? 'stable/' : 'dev/'
 			}"/>`
 		);
 
