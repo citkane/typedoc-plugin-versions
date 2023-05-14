@@ -46,7 +46,8 @@ export function refreshMetadata(
 	metadata: metadata,
 	docRoot: string,
 	stable = 'auto',
-	dev = 'auto'
+	dev = 'auto',
+	rootFile = 'package.json'
 ): metadata {
 	const validate = (v: string) => (v === 'auto' ? v : getSemanticVersion(v));
 	const vStable = validate(stable);
@@ -54,7 +55,8 @@ export function refreshMetadata(
 
 	const versions = refreshMetadataVersions(
 		[...(metadata.versions ?? []), metadata.stable, metadata.dev],
-		docRoot
+		docRoot,
+		rootFile
 	);
 
 	return {
@@ -70,7 +72,11 @@ export function refreshMetadata(
  * @param docRoot The path to the docs root.
  * @returns A distinct array of {@link version versions}, sorted in descending order.
  */
-export function refreshMetadataVersions(versions: version[], docRoot: string) {
+export function refreshMetadataVersions(
+	versions: version[],
+	docRoot: string,
+	rootFile
+) {
 	return (
 		[
 			// metadata versions
@@ -95,7 +101,7 @@ export function refreshMetadataVersions(versions: version[], docRoot: string) {
 			...getVersions(getPackageDirectories(docRoot)),
 
 			// package.json version
-			getSemanticVersion(),
+			getSemanticVersion(getPackageVersion(rootFile)),
 
 			// stable and dev symlinks
 			getSymlinkVersion('stable', docRoot),
@@ -438,3 +444,9 @@ export const verRegex = /^(v\d+|\d+).\d+.\d+/;
  * regex for matching semantic minor version
  */
 export const minorVerRegex = /^(v\d+|\d+).\d+$/;
+
+function getPackageVersion(rootFile: string) {
+	const packagePath = path.join(process.cwd(), rootFile);
+	const pack = fs.readJSONSync(packagePath);
+	return pack.version;
+}
