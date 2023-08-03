@@ -2,12 +2,13 @@
 	"name": "typedoc-plugin-versions",
 	"version": "0.2.3",
 	"description": "It keeps track of your document builds and provides a select menu for versions",
-	"main": "src/index",
+	"main": "dist/src/index",
 	"scripts": {
 		"test": "prettier -c . && nyc mocha",
 		"build": "npx tsc && node ./build.js",
 		"docs": "typedoc",
-		"docs:build": "tsc && typedoc"
+		"docs:build": "tsc && typedoc",
+                "prepare": "npx tsc && node ./build.js"
 	},
 	"repository": {
 		"type": "git",
