@@ -7,7 +7,7 @@
 		"test": "prettier -c . && nyc mocha",
 		"build": "npx tsc && node ./build.js",
 		"docs": "typedoc",
-		"docs:build": "tsc && typedoc"
+		"docs:build": "npm run build && typedoc"
 	},
 	"repository": {
 		"type": "git",
@@ -52,8 +52,7 @@
 		"prettier": "^2.7.1",
 		"sinon": "^14.0.0",
 		"ts-node": "^10.9.1",
-		"typedoc": "^0.23.10",
-		"typedoc-theme-yaf": "^0.0.2",
+		"typedoc": "^0.23.28",
 		"typescript": "^4.7.4"
 	},
 	"peerDependencies": {
