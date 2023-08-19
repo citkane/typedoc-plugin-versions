@@ -7,7 +7,5 @@
 	"externalPattern": ["**/node_modules/**"],
 	"excludeExternals": true,
 	"logLevel": "Verbose",
-	"plugin": ["typedoc-theme-yaf"],
-	"theme": "yaf",
-	"includeVersion": true
+	"plugin": ["./dist"]
 }
