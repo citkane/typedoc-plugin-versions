@@ -38,6 +38,7 @@ and then set up your environment in typedoc.json
 | **_stable_**      | The version that you would like to be marked as `stable`                                                                  | `string` |  **no**  | [Automatically inferred](https://github.com/citkane/typedoc-plugin-versions/wiki/%22stable%22-and-%22dev%22-version-automatic-inference) based on current version and build history. |
 | **_dev_**         | The version that you would like to be marked as `dev`                                                                     | `string` |  **no**  | [Automatically inferred](https://github.com/citkane/typedoc-plugin-versions/wiki/%22stable%22-and-%22dev%22-version-automatic-inference) based on current version and build history. |
 | **_domLocation_** | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string` |  **no**  | Injects to left of header using vanilla js - not a typedoc render hook.                                                                                                              |
+| **rootFile**         | Optionally pass in the name of the rootFile to refer to for versions.json                                                                     | `string` |  **no**  | package.json | 
 
 <br /><br />
 

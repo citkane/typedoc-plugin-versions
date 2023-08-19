@@ -28,6 +28,12 @@ export function load(app: Application) {
 			domLocation: 'false',
 		} as versionsOptions,
 	});
+	app.options.addDeclaration({
+		help: 'Root file',
+		name: 'rootFile',
+		type: ParameterType.String,
+		defaultValue: 'package.json',
+	});
 
 	const vOptions = vUtils.getVersionsOptions(app) as versionsOptions;
 
@@ -58,7 +64,8 @@ export function load(app: Application) {
 			vUtils.loadMetadata(rootPath),
 			rootPath,
 			vOptions.stable,
-			vOptions.dev
+			vOptions.dev,
+			vOptions.rootFile
 		);
 
 		vUtils.makeAliasLink(
