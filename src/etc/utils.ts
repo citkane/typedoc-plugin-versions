@@ -47,7 +47,7 @@ export function refreshMetadata(
 	docRoot: string,
 	stable = 'auto',
 	dev = 'auto',
-	rootFile = 'package.json'
+	packageFile = 'package.json'
 ): metadata {
 	const validate = (v: string) => (v === 'auto' ? v : getSemanticVersion(v));
 	const vStable = validate(stable);
@@ -56,7 +56,7 @@ export function refreshMetadata(
 	const versions = refreshMetadataVersions(
 		[...(metadata.versions ?? []), metadata.stable, metadata.dev],
 		docRoot,
-		rootFile
+		packageFile
 	);
 
 	return {
@@ -75,7 +75,7 @@ export function refreshMetadata(
 export function refreshMetadataVersions(
 	versions: version[],
 	docRoot: string,
-	rootFile
+	packageFile
 ) {
 	return (
 		[
@@ -101,7 +101,7 @@ export function refreshMetadataVersions(
 			...getVersions(getPackageDirectories(docRoot)),
 
 			// package.json version
-			getSemanticVersion(getPackageVersion(rootFile)),
+			getSemanticVersion(getPackageVersion(packageFile)),
 
 			// stable and dev symlinks
 			getSymlinkVersion('stable', docRoot),
@@ -301,14 +301,19 @@ export function makeJsKeys(metadata: metadata): string {
 export function makeAliasLink(
 	alias: semanticAlias,
 	docRoot: string,
-	pegVersion: version
+	pegVersion: version,
+	makeRelativeSymlinks?: boolean
 ): void {
 	pegVersion = getSemanticVersion(pegVersion);
-	const stableSource = path.join(docRoot, pegVersion);
+	const _docRoot = makeRelativeSymlinks ? './' : docRoot;
+	const stableSource = path.join(_docRoot, pegVersion);
+	const stableTarget = path.join(_docRoot, alias);
+
+	if (makeRelativeSymlinks) process.chdir(docRoot);
 
 	if (!fs.pathExistsSync(stableSource))
 		throw new Error(`Document directory does not exist: ${pegVersion}`);
-	const stableTarget = path.join(docRoot, alias);
+
 	if (fs.lstatSync(stableTarget, { throwIfNoEntry: false })?.isSymbolicLink())
 		fs.unlinkSync(stableTarget);
 	fs.ensureSymlinkSync(stableSource, stableTarget, 'junction');
@@ -322,6 +327,7 @@ export function makeAliasLink(
 export function makeMinorVersionLinks(
 	versions: version[],
 	docRoot: string,
+	makeRelativeSymlinks?: boolean,
 	stable: 'auto' | version = 'auto',
 	dev: 'auto' | version = 'auto'
 ): void {
@@ -352,8 +358,11 @@ export function makeMinorVersionLinks(
 		})
 		// filter to unique values
 		.filter((v, i, s) => s.indexOf(v) === i)) {
-		const target = path.join(docRoot, getMinorVersion(version));
-		const src = path.join(docRoot, version);
+		const _docRoot = makeRelativeSymlinks ? './' : docRoot;
+		const target = path.join(_docRoot, getMinorVersion(version));
+		const src = path.join(_docRoot, version);
+		if (makeRelativeSymlinks) process.chdir(docRoot);
+
 		if (fs.lstatSync(target, { throwIfNoEntry: false })?.isSymbolicLink())
 			fs.unlinkSync(target);
 		fs.ensureSymlinkSync(src, target, 'junction');
@@ -445,8 +454,8 @@ export const verRegex = /^(v\d+|\d+).\d+.\d+/;
  */
 export const minorVerRegex = /^(v\d+|\d+).\d+$/;
 
-function getPackageVersion(rootFile: string) {
-	const packagePath = path.join(process.cwd(), rootFile);
+function getPackageVersion(packageFile: string) {
+	const packagePath = path.join(process.cwd(), packageFile);
 	const pack = fs.readJSONSync(packagePath);
 	return pack.version;
 }

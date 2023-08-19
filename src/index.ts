@@ -26,13 +26,9 @@ export function load(app: Application) {
 			stable: 'auto',
 			dev: 'auto',
 			domLocation: 'false',
+			packageFile: 'package.json',
+			makeRelativeLinks: false,
 		} as versionsOptions,
-	});
-	app.options.addDeclaration({
-		help: 'Root file',
-		name: 'rootFile',
-		type: ParameterType.String,
-		defaultValue: 'package.json',
 	});
 
 	const vOptions = vUtils.getVersionsOptions(app) as versionsOptions;
@@ -65,16 +61,26 @@ export function load(app: Application) {
 			rootPath,
 			vOptions.stable,
 			vOptions.dev,
-			vOptions.rootFile
+			vOptions.packageFile
 		);
 
 		vUtils.makeAliasLink(
 			'stable',
 			rootPath,
-			metadata.stable ?? metadata.dev
+			metadata.stable ?? metadata.dev,
+			vOptions.makeRelativeLinks
 		);
-		vUtils.makeAliasLink('dev', rootPath, metadata.dev ?? metadata.stable);
-		vUtils.makeMinorVersionLinks(metadata.versions, rootPath);
+		vUtils.makeAliasLink(
+			'dev',
+			rootPath,
+			metadata.dev ?? metadata.stable,
+			vOptions.makeRelativeLinks
+		);
+		vUtils.makeMinorVersionLinks(
+			metadata.versions,
+			rootPath,
+			vOptions.makeRelativeLinks
+		);
 
 		const jsVersionKeys = vUtils.makeJsKeys(metadata);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);

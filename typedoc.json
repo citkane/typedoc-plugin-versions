@@ -7,5 +7,6 @@
 	"externalPattern": ["**/node_modules/**"],
 	"excludeExternals": true,
 	"logLevel": "Verbose",
-	"plugin": ["./dist"]
+	"plugin": ["./dist"],
+	"versions": { "packageFile": "package.json", "makeRelativeLinks": false }
 }

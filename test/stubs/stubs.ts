@@ -5,7 +5,13 @@ export const stubsPath = __dirname;
 export const docsPath = path.join(stubsPath, 'docs');
 export const stubVersions = ['v0.0.0', 'v0.1.0', 'v0.1.1', 'v0.2.3', 'v0.10.1'];
 export const stubSemanticLinks = ['v0.0', 'v0.1', 'v0.2', 'v0.10'];
-export const stubOptionKeys = ['stable', 'dev', 'domLocation'];
+export const stubOptionKeys = [
+	'stable',
+	'dev',
+	'domLocation',
+	'packageFile',
+	'makeRelativeLinks',
+];
 export const stubPathKeys = ['rootPath', 'targetPath'];
 export const stubRootPath =
 	process.platform === 'win32' ? '\\test\\stubs\\docs' : '/test/stubs/docs';
