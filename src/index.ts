@@ -26,6 +26,8 @@ export function load(app: Application) {
 			stable: 'auto',
 			dev: 'auto',
 			domLocation: 'false',
+			packageFile: 'package.json',
+			makeRelativeLinks: false,
 		} as versionsOptions,
 	});
 
@@ -58,16 +60,27 @@ export function load(app: Application) {
 			vUtils.loadMetadata(rootPath),
 			rootPath,
 			vOptions.stable,
-			vOptions.dev
+			vOptions.dev,
+			vOptions.packageFile
 		);
 
 		vUtils.makeAliasLink(
 			'stable',
 			rootPath,
-			metadata.stable ?? metadata.dev
+			metadata.stable ?? metadata.dev,
+			vOptions.makeRelativeLinks
 		);
-		vUtils.makeAliasLink('dev', rootPath, metadata.dev ?? metadata.stable);
-		vUtils.makeMinorVersionLinks(metadata.versions, rootPath);
+		vUtils.makeAliasLink(
+			'dev',
+			rootPath,
+			metadata.dev ?? metadata.stable,
+			vOptions.makeRelativeLinks
+		);
+		vUtils.makeMinorVersionLinks(
+			metadata.versions,
+			rootPath,
+			vOptions.makeRelativeLinks
+		);
 
 		const jsVersionKeys = vUtils.makeJsKeys(metadata);
 		fs.writeFileSync(path.join(rootPath, 'versions.js'), jsVersionKeys);

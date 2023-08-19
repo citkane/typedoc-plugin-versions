@@ -23,6 +23,8 @@ export interface versionsOptions {
 	 * Default: Injects to left of header using vanilla js - not a typedoc render hook.
 	 */
 	domLocation?: validLocation | 'false';
+	packageFile?: string | 'package.json';
+	makeRelativeLinks?: boolean;
 }
 export type version = `v${string}`;
 

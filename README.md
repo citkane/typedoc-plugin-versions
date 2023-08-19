@@ -1,3 +1,7 @@
+| :warning: DEPRECATION WARNING                                                |
+| :--------------------------------------------------------------------------- |
+| This package will not work with Typedoc > v0.23 due to breaking API changes. |
+
 [![RELEASE AND PUBLISH](https://github.com/citkane/typedoc-plugin-versions/actions/workflows/release.yml/badge.svg)](https://github.com/citkane/typedoc-plugin-versions/actions/workflows/release.yml)
 [![codecov](https://codecov.io/gh/citkane/typedoc-plugin-versions/branch/main/graph/badge.svg?token=5DDL83JO0R)](https://codecov.io/gh/citkane/typedoc-plugin-versions)
 [![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/citkane/typedoc-plugin-versions)
@@ -33,11 +37,13 @@ and then set up your environment in typedoc.json
 
 ## Options
 
-| Key               | Value Information                                                                                                         | Type     | Required | Default                                                                                                                                                                              |
-| :---------------- | ------------------------------------------------------------------------------------------------------------------------- | -------- | :------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **_stable_**      | The version that you would like to be marked as `stable`                                                                  | `string` |  **no**  | [Automatically inferred](https://github.com/citkane/typedoc-plugin-versions/wiki/%22stable%22-and-%22dev%22-version-automatic-inference) based on current version and build history. |
-| **_dev_**         | The version that you would like to be marked as `dev`                                                                     | `string` |  **no**  | [Automatically inferred](https://github.com/citkane/typedoc-plugin-versions/wiki/%22stable%22-and-%22dev%22-version-automatic-inference) based on current version and build history. |
-| **_domLocation_** | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string` |  **no**  | Injects to left of header using vanilla js - not a typedoc render hook.                                                                                                              |
+| Key                   | Value Information                                                                                                         | Type      | Required | Default                                                                                                                                                                              |
+| :-------------------- | ------------------------------------------------------------------------------------------------------------------------- | --------- | :------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **_stable_**          | The version that you would like to be marked as `stable`                                                                  | `string`  |  **no**  | [Automatically inferred](https://github.com/citkane/typedoc-plugin-versions/wiki/%22stable%22-and-%22dev%22-version-automatic-inference) based on current version and build history. |
+| **_dev_**             | The version that you would like to be marked as `dev`                                                                     | `string`  |  **no**  | [Automatically inferred](https://github.com/citkane/typedoc-plugin-versions/wiki/%22stable%22-and-%22dev%22-version-automatic-inference) based on current version and build history. |
+| **_domLocation_**     | A custom DOM location to render the HTML `select` dropdown corresponding to typedoc rendererHooks, eg. "navigation.begin" | `string`  |  **no**  | Injects to left of header using vanilla js - not a typedoc render hook.                                                                                                              |
+| **packageFile**       | Pass in an alternative name convention for "package.json"                                                                 | `string`  |  **no**  | package.json                                                                                                                                                                         |
+| **makeRelativeLinks** | Create relative instead of absolute symlinks in the document out directory                                                | `boolean` |  **no**  | `false`                                                                                                                                                                              |
 
 <br /><br />
 
